@@ -1,0 +1,286 @@
+ANSI ESCAPE SEQUENCES REFERENCE DOCUMENT
+==========================================
+Format: Name | Sequence | Hex Bytes | Size | Description
+Grouped by category, one sequence per line
+Parameters shown as (name) in both sequence and hex
+
+C ESCAPE SEQUENCES
+Newline | "\n" | 0A | 1 | Newline
+Carriage Return | "\r" | 0D | 1 | Carriage return
+Horizontal Tab | "\t" | 09 | 1 | Horizontal tab
+Backspace | "\b" | 08 | 1 | Backspace
+Form Feed | "\f" | 0C | 1 | Form feed
+Vertical Tab | "\v" | 0B | 1 | Vertical tab
+Bell Alert | "\a" | 07 | 1 | Bell (alert)
+Backslash | "\\" | 5C | 1 | Backslash
+Double Quote | "\"" | 22 | 1 | Double quote
+Single Quote | "'" | 27 | 1 | Single quote
+Null Character | "\0" | 00 | 1 | Null character
+ESC Hex Notation | "\x1b" | 1B | 1 | ESC hex notation
+ESC Octal Notation | "\033" | 1B | 1 | ESC octal notation
+ESC GCC Extension | "\e" | 1B | 1 | ESC (GCC extension)
+
+CURSOR CONTROL - MOVEMENT
+Cursor Up | "\033[(n)A" | 1B 5B (n) 41 | 4+ | Move cursor up n lines (default 1, n=number of lines)
+Cursor Down | "\033[(n)B" | 1B 5B (n) 42 | 4+ | Move cursor down n lines (default 1, n=number of lines)
+Cursor Forward | "\033[(n)C" | 1B 5B (n) 43 | 4+ | Move cursor right n columns (default 1, n=number of columns)
+Cursor Back | "\033[(n)D" | 1B 5B (n) 44 | 4+ | Move cursor left n columns (default 1, n=number of columns)
+Cursor Next Line | "\033[(n)E" | 1B 5B (n) 45 | 4+ | Move cursor to beginning of n lines down (default 1, n=number of lines)
+Cursor Previous Line | "\033[(n)F" | 1B 5B (n) 46 | 4+ | Move cursor to beginning of n lines up (default 1, n=number of lines)
+Cursor Horizontal Absolute | "\033[(n)G" | 1B 5B (n) 47 | 4+ | Move cursor to column n (default 1, n=column number)
+Set Cursor Position | "\033[(row);(col)H" | 1B 5B (row) 3B (col) 48 | 6+ | Move cursor to row;column (both default 1, 1-based, row=line number, col=column number)
+Cursor Position Save | "\033[s" | 1B 5B 73 | 3 | Save current cursor position (DECSC)
+Cursor Position Restore | "\033[u" | 1B 5B 75 | 3 | Restore cursor to saved position (DECRC)
+Save Cursor and Attributes | "\0337" | 1B 37 | 2 | Save cursor position and attributes (DECSC)
+Restore Cursor and Attributes | "\0338" | 1B 38 | 2 | Restore cursor position and attributes (DECRC)
+
+CURSOR CONTROL - VISIBILITY
+Hide Cursor | "\033[?25l" | 1B 5B 3F 32 35 6C | 6 | Make cursor invisible (DECTCEM)
+Show Cursor | "\033[?25h" | 1B 5B 3F 32 35 68 | 6 | Make cursor visible (DECTCEM)
+Cursor Blink Disable | "\033[?12l" | 1B 5B 3F 31 32 6C | 6 | Disable cursor blinking
+Cursor Blink Enable | "\033[?12h" | 1B 5B 3F 31 32 68 | 6 | Enable cursor blinking
+
+ERASE FUNCTIONS
+Erase in Display Cursor to End | "\033[0J" | 1B 5B 30 4A | 4 | Clear from cursor to end of screen
+Erase in Display Start to Cursor | "\033[1J" | 1B 5B 31 4A | 4 | Clear from start of screen to cursor
+Erase in Display Entire Screen | "\033[2J" | 1B 5B 32 4A | 4 | Clear entire screen
+Erase in Display Entire Screen and Buffer | "\033[3J" | 1B 5B 33 4A | 4 | Clear entire screen and scrollback buffer
+Erase in Line Cursor to End | "\033[0K" | 1B 5B 30 4B | 4 | Clear from cursor to end of line
+Erase in Line Start to Cursor | "\033[1K" | 1B 5B 31 4B | 4 | Clear from start of line to cursor
+Erase in Line Entire Line | "\033[2K" | 1B 5B 32 4B | 4 | Clear entire line
+
+TEXT FORMATTING - SGR (Select Graphic Rendition)
+Reset All | "\033[0m" | 1B 5B 30 6D | 4 | Reset all attributes to default
+Bold | "\033[1m" | 1B 5B 31 6D | 4 | Bold or increased intensity
+Dim | "\033[2m" | 1B 5B 32 6D | 4 | Dim or decreased intensity
+Italic | "\033[3m" | 1B 5B 33 6D | 4 | Italic (not widely supported)
+Underline | "\033[4m" | 1B 5B 34 6D | 4 | Underline
+Slow Blink | "\033[5m" | 1B 5B 35 6D | 4 | Slow blink
+Rapid Blink | "\033[6m" | 1B 5B 36 6D | 4 | Rapid blink (not widely supported)
+Reverse Video | "\033[7m" | 1B 5B 37 6D | 4 | Swap foreground and background colors
+Conceal | "\033[8m" | 1B 5B 38 6D | 4 | Conceal (not widely supported)
+Crossed Out | "\033[9m" | 1B 5B 39 6D | 4 | Crossed out (strikethrough)
+Primary Font | "\033[10m" | 1B 5B 31 30 6D | 5 | Select primary font
+Alternative Font 1 | "\033[11m" | 1B 5B 31 31 6D | 5 | Select alternative font 1
+Alternative Font 2 | "\033[12m" | 1B 5B 31 32 6D | 5 | Select alternative font 2
+Alternative Font 3 | "\033[13m" | 1B 5B 31 33 6D | 5 | Select alternative font 3
+Alternative Font 4 | "\033[14m" | 1B 5B 31 34 6D | 5 | Select alternative font 4
+Alternative Font 5 | "\033[15m" | 1B 5B 31 35 6D | 5 | Select alternative font 5
+Alternative Font 6 | "\033[16m" | 1B 5B 31 36 6D | 5 | Select alternative font 6
+Alternative Font 7 | "\033[17m" | 1B 5B 31 37 6D | 5 | Select alternative font 7
+Alternative Font 8 | "\033[18m" | 1B 5B 31 38 6D | 5 | Select alternative font 8
+Alternative Font 9 | "\033[19m" | 1B 5B 31 39 6D | 5 | Select alternative font 9
+Framed | "\033[51m" | 1B 5B 35 31 6D | 5 | Framed
+Encircled | "\033[52m" | 1B 5B 35 32 6D | 5 | Encircled
+Overlined | "\033[53m" | 1B 5B 35 33 6D | 5 | Overlined
+Not Bold | "\033[21m" | 1B 5B 32 31 6D | 5 | Not bold (normal intensity)
+Not Dim | "\033[22m" | 1B 5B 32 32 6D | 5 | Not dim
+Not Italic | "\033[23m" | 1B 5B 32 33 6D | 5 | Not italic
+Not Underline | "\033[24m" | 1B 5B 32 34 6D | 5 | Not underlined
+Not Blinking | "\033[25m" | 1B 5B 32 35 6D | 5 | Not blinking
+Not Reverse | "\033[27m" | 1B 5B 32 37 6D | 5 | Not reversed
+Not Concealed | "\033[28m" | 1B 5B 32 38 6D | 5 | Not concealed
+Not Crossed Out | "\033[29m" | 1B 5B 32 39 6D | 5 | Not crossed out
+
+BASIC COLORS - FOREGROUND (3/4-bit)
+Foreground Black | "\033[30m" | 1B 5B 33 30 6D | 5 | Set foreground color to black
+Foreground Red | "\033[31m" | 1B 5B 33 31 6D | 5 | Set foreground color to red
+Foreground Green | "\033[32m" | 1B 5B 33 32 6D | 5 | Set foreground color to green
+Foreground Yellow | "\033[33m" | 1B 5B 33 33 6D | 5 | Set foreground color to yellow
+Foreground Blue | "\033[34m" | 1B 5B 33 34 6D | 5 | Set foreground color to blue
+Foreground Magenta | "\033[35m" | 1B 5B 33 35 6D | 5 | Set foreground color to magenta
+Foreground Cyan | "\033[36m" | 1B 5B 33 36 6D | 5 | Set foreground color to cyan
+Foreground White | "\033[37m" | 1B 5B 33 37 6D | 5 | Set foreground color to white
+Foreground Default | "\033[39m" | 1B 5B 33 39 6D | 5 | Set foreground color to default
+
+BASIC COLORS - BRIGHT FOREGROUND
+Bright Foreground Black | "\033[90m" | 1B 5B 39 30 6D | 5 | Set foreground color to bright black (gray)
+Bright Foreground Red | "\033[91m" | 1B 5B 39 31 6D | 5 | Set foreground color to bright red
+Bright Foreground Green | "\033[92m" | 1B 5B 39 32 6D | 5 | Set foreground color to bright green
+Bright Foreground Yellow | "\033[93m" | 1B 5B 39 33 6D | 5 | Set foreground color to bright yellow
+Bright Foreground Blue | "\033[94m" | 1B 5B 39 34 6D | 5 | Set foreground color to bright blue
+Bright Foreground Magenta | "\033[95m" | 1B 5B 39 35 6D | 5 | Set foreground color to bright magenta
+Bright Foreground Cyan | "\033[96m" | 1B 5B 39 36 6D | 5 | Set foreground color to bright cyan
+Bright Foreground White | "\033[97m" | 1B 5B 39 37 6D | 5 | Set foreground color to bright white
+
+BASIC COLORS - BACKGROUND (3/4-bit)
+Background Black | "\033[40m" | 1B 5B 34 30 6D | 5 | Set background color to black
+Background Red | "\033[41m" | 1B 5B 34 31 6D | 5 | Set background color to red
+Background Green | "\033[42m" | 1B 5B 34 32 6D | 5 | Set background color to green
+Background Yellow | "\033[43m" | 1B 5B 34 33 6D | 5 | Set background color to yellow
+Background Blue | "\033[44m" | 1B 5B 34 34 6D | 5 | Set background color to blue
+Background Magenta | "\033[45m" | 1B 5B 34 35 6D | 5 | Set background color to magenta
+Background Cyan | "\033[46m" | 1B 5B 34 36 6D | 5 | Set background color to cyan
+Background White | "\033[47m" | 1B 5B 34 37 6D | 5 | Set background color to white
+Background Default | "\033[49m" | 1B 5B 34 39 6D | 5 | Set background color to default
+
+BASIC COLORS - BRIGHT BACKGROUND
+Bright Background Black | "\033[100m" | 1B 5B 31 30 30 6D | 6 | Set background color to bright black (gray)
+Bright Background Red | "\033[101m" | 1B 5B 31 30 31 6D | 6 | Set background color to bright red
+Bright Background Green | "\033[102m" | 1B 5B 31 30 32 6D | 6 | Set background color to bright green
+Bright Background Yellow | "\033[103m" | 1B 5B 31 30 33 6D | 6 | Set background color to bright yellow
+Bright Background Blue | "\033[104m" | 1B 5B 31 30 34 6D | 6 | Set background color to bright blue
+Bright Background Magenta | "\033[105m" | 1B 5B 31 30 35 6D | 6 | Set background color to bright magenta
+Bright Background Cyan | "\033[106m" | 1B 5B 31 30 36 6D | 6 | Set background color to bright cyan
+Bright Background White | "\033[107m" | 1B 5B 31 30 37 6D | 6 | Set background color to bright white
+
+256-COLOR MODE - FOREGROUND
+256-Color Foreground | "\033[38;5;(index)m" | 1B 5B 33 38 3B 35 3B (index) 6D | 8+ | Set foreground color using 256-color palette (index=0-255)
+
+256-COLOR MODE - BACKGROUND
+256-Color Background | "\033[48;5;(index)m" | 1B 5B 34 38 3B 35 3B (index) 6D | 8+ | Set background color using 256-color palette (index=0-255)
+
+TRUE COLOR RGB - FOREGROUND
+RGB Foreground | "\033[38;2;(r);(g);(b)m" | 1B 5B 33 38 3B 32 3B (r) 3B (g) 3B (b) 6D | 12+ | Set foreground color using 24-bit RGB (r=red 0-255, g=green 0-255, b=blue 0-255)
+
+TRUE COLOR RGB - BACKGROUND
+RGB Background | "\033[48;2;(r);(g);(b)m" | 1B 5B 34 38 3B 32 3B (r) 3B (g) 3B (b) 6D | 12+ | Set background color using 24-bit RGB (r=red 0-255, g=green 0-255, b=blue 0-255)
+
+SCROLL AND LINE OPERATIONS
+Scroll Up | "\033[(n)S" | 1B 5B (n) 53 | 4+ | Scroll entire display up by n lines (default 1, n=number of lines)
+Scroll Down | "\033[(n)T" | 1B 5B (n) 54 | 4+ | Scroll entire display down by n lines (default 1, n=number of lines)
+Insert Line | "\033[(n)L" | 1B 5B (n) 4C | 4+ | Insert n blank lines at cursor (default 1, n=number of lines)
+Delete Line | "\033[(n)M" | 1B 5B (n) 4D | 4+ | Delete n lines at cursor (default 1, n=number of lines)
+Insert Character | "\033[(n)@" | 1B 5B (n) 40 | 4+ | Insert n blank characters at cursor (default 1, n=number of characters)
+Delete Character | "\033[(n)P" | 1B 5B (n) 50 | 4+ | Delete n characters at cursor (default 1, n=number of characters)
+Erase Character | "\033[(n)X" | 1B 5B (n) 58 | 4+ | Erase n characters at cursor (default 1, n=number of characters)
+
+SCREEN AND BUFFER CONTROL
+Alternative Screen Buffer Enter | "\033[?1049h" | 1B 5B 3F 31 30 34 39 68 | 8 | Switch to alternative screen buffer
+Alternative Screen Buffer Exit | "\033[?1049l" | 1B 5B 3F 31 30 34 39 6C | 8 | Return to main screen buffer
+Save Cursor and Screen | "\033[?47h" | 1B 5B 3F 34 37 68 | 6 | Save cursor position and switch to alternative buffer
+Restore Cursor and Screen | "\033[?47l" | 1B 5B 3F 34 37 6C | 6 | Restore cursor position and return to main buffer
+Set Scrolling Region | "\033[(top);(bottom)r" | 1B 5B (top) 3B (bottom) 72 | 6+ | Set scrolling region from top to bottom line (both 1-based, top=first line, bottom=last line)
+Reset Scrolling Region | "\033[r" | 1B 5B 72 | 3 | Reset scrolling region to full screen
+Window Title Set | "\033]0;(title)\007" | 1B 5D 30 3B (title) 07 | 5+ | Set window title (OSC 0, title=window title text)
+Window Title Query | "\033]21;\007" | 1B 5D 32 31 3B 07 | 6 | Query window title (OSC 21)
+Window Title Report | "\033]21;(title)\007" | 1B 5D 32 31 3B (title) 07 | 6+ | Window title report response (title=window title text)
+Icon Name Set | "\033]1;(name)\007" | 1B 5D 31 3B (name) 07 | 5+ | Set icon name (OSC 1, name=icon name text)
+Icon Name Query | "\033]31;\007" | 1B 5D 33 31 3B 07 | 6 | Query icon name (OSC 31)
+Icon Name Report | "\033]31;(name)\007" | 1B 5D 33 31 3B (name) 07 | 6+ | Icon name report response (name=icon name text)
+
+TERMINAL MODES - SET MODE (SM)
+Insert Mode | "\033[4h" | 1B 5B 34 68 | 4 | Enable insert mode
+Replace Mode | "\033[4l" | 1B 5B 34 6C | 4 | Disable insert mode (replace mode)
+Line Wrap Enable | "\033[?7h" | 1B 5B 3F 37 68 | 5 | Enable automatic line wrap
+Line Wrap Disable | "\033[?7l" | 1B 5B 3F 37 6C | 5 | Disable automatic line wrap
+Mouse Tracking Enable | "\033[?1000h" | 1B 5B 3F 31 30 30 30 68 | 8 | Enable mouse tracking
+Mouse Tracking Disable | "\033[?1000l" | 1B 5B 3F 31 30 30 30 6C | 8 | Disable mouse tracking
+Mouse Tracking Highlight Enable | "\033[?1001h" | 1B 5B 3F 31 30 30 31 68 | 8 | Enable mouse tracking with highlight
+Mouse Tracking Highlight Disable | "\033[?1001l" | 1B 5B 3F 31 30 30 31 6C | 8 | Disable mouse tracking with highlight
+Mouse Tracking Button Enable | "\033[?1002h" | 1B 5B 3F 31 30 30 32 68 | 8 | Enable mouse tracking for button events
+Mouse Tracking Button Disable | "\033[?1002l" | 1B 5B 3F 31 30 30 32 6C | 8 | Disable mouse tracking for button events
+Mouse Tracking Any Motion Enable | "\033[?1003h" | 1B 5B 3F 31 30 30 33 68 | 8 | Enable mouse tracking for any motion
+Mouse Tracking Any Motion Disable | "\033[?1003l" | 1B 5B 3F 31 30 30 33 6C | 8 | Disable mouse tracking for any motion
+Focus Event Enable | "\033[?1004h" | 1B 5B 3F 31 30 30 34 68 | 8 | Enable focus in/out event reporting
+Focus Event Disable | "\033[?1004l" | 1B 5B 3F 31 30 30 34 6C | 8 | Disable focus in/out event reporting
+Alternate Screen Buffer Enable | "\033[?1049h" | 1B 5B 3F 31 30 34 39 68 | 8 | Enable alternate screen buffer
+Alternate Screen Buffer Disable | "\033[?1049l" | 1B 5B 3F 31 30 34 39 6C | 8 | Disable alternate screen buffer
+Bracketed Paste Enable | "\033[?2004h" | 1B 5B 3F 32 30 30 34 68 | 8 | Enable bracketed paste mode
+Bracketed Paste Disable | "\033[?2004l" | 1B 5B 3F 32 30 30 34 6C | 8 | Disable bracketed paste mode
+
+TERMINAL MODES - RESET MODE (RM)
+Reset Insert Mode | "\033[4l" | 1B 5B 34 6C | 4 | Disable insert mode
+Reset Line Wrap | "\033[?7l" | 1B 5B 3F 37 6C | 5 | Disable automatic line wrap
+Reset Mouse Tracking | "\033[?1000l" | 1B 5B 3F 31 30 30 30 6C | 8 | Disable mouse tracking
+
+KEYBOARD INPUT SEQUENCES
+Function Key F1 | "\033OP" | 1B 4F 50 | 3 | F1 key (VT100)
+Function Key F2 | "\033OQ" | 1B 4F 51 | 3 | F2 key (VT100)
+Function Key F3 | "\033OR" | 1B 4F 52 | 3 | F3 key (VT100)
+Function Key F4 | "\033OS" | 1B 4F 53 | 3 | F4 key (VT100)
+Function Key F1 Extended | "\033[11~" | 1B 5B 31 31 7E | 5 | F1 key (extended)
+Function Key F2 Extended | "\033[12~" | 1B 5B 31 32 7E | 5 | F2 key (extended)
+Function Key F3 Extended | "\033[13~" | 1B 5B 31 33 7E | 5 | F3 key (extended)
+Function Key F4 Extended | "\033[14~" | 1B 5B 31 34 7E | 5 | F4 key (extended)
+Function Key F5 Extended | "\033[15~" | 1B 5B 31 35 7E | 5 | F5 key (extended)
+Function Key F6 Extended | "\033[17~" | 1B 5B 31 37 7E | 5 | F6 key (extended)
+Function Key F7 Extended | "\033[18~" | 1B 5B 31 38 7E | 5 | F7 key (extended)
+Function Key F8 Extended | "\033[19~" | 1B 5B 31 39 7E | 5 | F8 key (extended)
+Function Key F9 Extended | "\033[20~" | 1B 5B 32 30 7E | 5 | F9 key (extended)
+Function Key F10 Extended | "\033[21~" | 1B 5B 32 31 7E | 5 | F10 key (extended)
+Function Key F11 Extended | "\033[23~" | 1B 5B 32 33 7E | 5 | F11 key (extended)
+Function Key F12 Extended | "\033[24~" | 1B 5B 32 34 7E | 5 | F12 key (extended)
+Arrow Up | "\033[A" | 1B 5B 41 | 3 | Up arrow key
+Arrow Down | "\033[B" | 1B 5B 42 | 3 | Down arrow key
+Arrow Right | "\033[C" | 1B 5B 43 | 3 | Right arrow key
+Arrow Left | "\033[D" | 1B 5B 44 | 3 | Left arrow key
+Home | "\033[H" | 1B 5B 48 | 3 | Home key
+End | "\033[F" | 1B 5B 46 | 3 | End key
+Page Up | "\033[5~" | 1B 5B 35 7E | 4 | Page Up key
+Page Down | "\033[6~" | 1B 5B 36 7E | 4 | Page Down key
+Insert | "\033[2~" | 1B 5B 32 7E | 4 | Insert key
+Delete | "\033[3~" | 1B 5B 33 7E | 4 | Delete key
+Backspace | "\b" | 08 | 1 | Backspace key
+Tab | "\t" | 09 | 1 | Tab key
+Enter | "\r" | 0D | 1 | Enter/Return key
+Escape | "\033" | 1B | 1 | Escape key
+
+QUERY AND REPORT SEQUENCES
+Device Status Report Request | "\033[6n" | 1B 5B 36 6E | 4 | Request cursor position (DSR)
+Device Status Report Response | "\033[(row);(col)R" | 1B 5B (row) 3B (col) 52 | 6+ | Cursor position report (row=line number, col=column number, both 1-based)
+Device Attributes Request | "\033[c" | 1B 5B 63 | 3 | Request device attributes (DA)
+Device Attributes Response | "\033[?(id);(version)c" | 1B 5B 3F (id) 3B (version) 63 | 6+ | Device attributes response (id=device ID, version=version number)
+Secondary Device Attributes Request | "\033[>c" | 1B 5B 3F 63 | 4 | Request secondary device attributes
+Secondary Device Attributes Response | "\033[>(id);(version);(capabilities)c" | 1B 5B 3E (id) 3B (version) 3B (capabilities) 63 | 6+ | Secondary device attributes response (id=device ID, version=version, capabilities=feature flags)
+Terminal ID Request | "\033[0c" | 1B 5B 30 63 | 4 | Request terminal ID
+Terminal ID Response | "\033[(id);(version)c" | 1B 5B (id) 3B (version) 63 | 6+ | Terminal ID response (id=terminal ID, version=version number)
+
+OSC - OPERATING SYSTEM COMMANDS
+OSC Set Window Title | "\033]0;(title)\007" | 1B 5D 30 3B (title) 07 | 5+ | Set window title (OSC 0, title=window title text)
+OSC Set Icon Name | "\033]1;(name)\007" | 1B 5D 31 3B (name) 07 | 5+ | Set icon name (OSC 1, name=icon name text)
+OSC Set Window Title and Icon | "\033]2;(title)\007" | 1B 5D 32 3B (title) 07 | 5+ | Set both window title and icon (OSC 2, title=window title text)
+OSC Set Text Parameters | "\033]4;(index);(color)\007" | 1B 5D 34 3B (index) 3B (color) 07 | 5+ | Set text parameters (OSC 4, index=color index, color=color value)
+OSC Set Text Foreground Color | "\033]10;(color)\007" | 1B 5D 31 30 3B (color) 07 | 6+ | Set text foreground color (OSC 10, color=color value)
+OSC Set Text Background Color | "\033]11;(color)\007" | 1B 5D 31 31 3B (color) 07 | 6+ | Set text background color (OSC 11, color=color value)
+OSC Set Cursor Color | "\033]12;(color)\007" | 1B 5D 31 32 3B (color) 07 | 6+ | Set cursor color (OSC 12, color=color value)
+OSC Set Clipboard | "\033]52;(target);(data)\007" | 1B 5D 35 32 3B (target) 3B (data) 07 | 7+ | Set clipboard (OSC 52, target=clipboard target, data=base64 encoded data)
+OSC Hyperlink Start | "\033]8;;(url)\007" | 1B 5D 38 3B 3B 3B (url) 07 | 7+ | Start hyperlink (OSC 8, url=hyperlink URL)
+OSC Hyperlink End | "\033]8;;\007" | 1B 5D 38 3B 3B 3B 07 | 7 | End hyperlink (OSC 8)
+OSC Query Window Title | "\033]21;\007" | 1B 5D 32 31 3B 07 | 6 | Query window title (OSC 21)
+OSC Report Window Title | "\033]21;(title)\007" | 1B 5D 32 31 3B (title) 07 | 6+ | Report window title (OSC 21, title=window title text)
+OSC Query Icon Name | "\033]31;\007" | 1B 5D 33 31 3B 07 | 6 | Query icon name (OSC 31)
+OSC Report Icon Name | "\033]31;(name)\007" | 1B 5D 33 31 3B (name) 07 | 6+ | Report icon name (OSC 31, name=icon name text)
+
+ADVANCED AND SPECIAL SEQUENCES
+Reset Device | "\033c" | 1B 63 | 2 | Reset terminal to initial state (RIS)
+Soft Reset | "\033[?1l" | 1B 5B 3F 31 6C | 5 | Soft reset (DECSTR)
+Enable Locator | "\033[?25h" | 1B 5B 3F 32 35 68 | 6 | Enable locator reporting
+Disable Locator | "\033[?25l" | 1B 5B 3F 32 35 6C | 6 | Disable locator reporting
+Request Locator Position | "\033[?25n" | 1B 5B 3F 32 35 6E | 6 | Request locator position
+Full Reset | "\033c" | 1B 63 | 2 | Full reset (RIS)
+Enable Smooth Scroll | "\033[?4h" | 1B 5B 3F 34 68 | 5 | Enable smooth scrolling
+Disable Smooth Scroll | "\033[?4l" | 1B 5B 3F 34 6C | 5 | Disable smooth scrolling
+Enable Reverse Wrap | "\033[?45h" | 1B 5B 3F 34 35 68 | 6 | Enable reverse wrap-around
+Disable Reverse Wrap | "\033[?45l" | 1B 5B 3F 34 35 6C | 6 | Disable reverse wrap-around
+Set Character Set G0 | "\033((set)" | 1B 28 (set) | 3+ | Set G0 character set (set=character set identifier)
+Set Character Set G1 | "\033)(set)" | 1B 29 (set) | 3+ | Set G1 character set (set=character set identifier)
+Set Character Set G2 | "\033*(set)" | 1B 32 (set) | 3+ | Set G2 character set (set=character set identifier)
+Set Character Set G3 | "\033+(set)" | 1B 33 (set) | 3+ | Set G3 character set (set=character set identifier)
+Lock Shift G2 | "\033N" | 1B 4E | 2 | Lock shift to G2
+Lock Shift G3 | "\033O" | 1B 4F | 2 | Lock shift to G3
+Unlock Shift | "\033n" | 1B 6E | 2 | Unlock shift
+
+WINDOWS CONSOLE API - REQUIRES ENABLE_VIRTUAL_TERMINAL_PROCESSING
+All ANSI sequences above require ENABLE_VIRTUAL_TERMINAL_PROCESSING flag to be set via SetConsoleMode
+GetStdHandle STD_OUTPUT_HANDLE | API | N/A | Get handle to standard output
+GetStdHandle STD_INPUT_HANDLE | API | N/A | Get handle to standard input
+GetStdHandle STD_ERROR_HANDLE | API | N/A | Get handle to standard error
+GetConsoleMode | API | N/A | Get current console mode flags
+SetConsoleMode | API | N/A | Set console mode flags (must include ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+SetConsoleCursorPosition | API | N/A | Set cursor position directly (0-based coordinates)
+GetConsoleScreenBufferInfo | API | N/A | Get screen buffer information including cursor position
+WriteConsole | API | N/A | Write text to console (processes ANSI sequences if mode enabled)
+WriteConsoleOutput | API | N/A | Write directly to screen buffer (bypasses ANSI processing)
+ReadConsoleInput | API | N/A | Read input events including keyboard and mouse
+SetConsoleTextAttribute | API | N/A | Set text attributes directly (legacy method, bypasses ANSI)
+
+PRACTICAL EXAMPLES
+Clear Screen and Home | "\033[2J\033[H" | 1B 5B 32 4A 1B 5B 48 | 7 | Clear screen and move cursor to home (1,1)
+Bold Red Text | "\033[1;31m" | 1B 5B 31 3B 33 31 6D | 7 | Bold and red foreground
+Underline Yellow Background | "\033[4;43m" | 1B 5B 34 3B 34 33 6D | 7 | Underline with yellow background
+Progress Bar Pattern | Multiple sequences | Variable | Use cursor movement and line clearing to create progress bars
+Two Column Layout | Multiple sequences | Variable | Use cursor save/restore and positioning for columns
+Status Line | Multiple sequences | Variable | Use cursor positioning and line clearing for persistent status
+Box Drawing | Unicode characters | N/A | Use Unicode box drawing characters with ANSI positioning
+

@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANSI/VT Terminal Reference</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap');
+
+:root {
+  --bg: #0a0e14;
+  --bg-alt: #0d1117;
+  --bg-panel: #11161d;
+  --bg-hover: #1a1f29;
+  --border: #1f2937;
+  --border-bright: #374151;
+  --border-hover: #4b5563;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --text-bright: #f0f6fc;
+  --accent: #58a6ff;
+  --accent-dim: #388bfd;
+  --green: #3fb950;
+  --red: #f85149;
+  --yellow: #f0db4f;
+  --purple: #bc8cff;
+  --cyan: #79c0ff;
+  --orange: #ff9800;
+  --gap: 2px;
+  --radius: 2px;
+  --esc: #ff6b6b;
+  --bracket: #4ecdc4;
+  --number: #95e77e;
+  --letter: #ffd93d;
+  --semicolon: #a8e6cf;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.4;
+  font-size: 12px;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--gap);
+}
+
+.header {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.nav {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+  position: sticky;
+  top: 2px;
+  z-index: 100;
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.nav a {
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.1s;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: var(--bg);
+}
+
+.section {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: var(--gap);
+  overflow: hidden;
+}
+
+.section-header {
+  background: var(--bg-alt);
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.section-header:hover {
+  background: var(--bg-hover);
+}
+
+.section-header::before {
+  content: '▼';
+  color: var(--accent-dim);
+  font-size: 10px;
+  transition: transform 0.2s;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.section.collapsed .section-header::before {
+  transform: rotate(-90deg);
+}
+
+.section-content {
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.section.collapsed .section-content {
+  max-height: 0;
+}
+
+.seq-entry {
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid transparent;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.1s;
+  position: relative;
+}
+
+.seq-entry:hover {
+  background: var(--border-bright);
+  border-color: var(--accent-dim);
+}
+
+.seq-entry:active {
+  background: var(--accent-dim);
+}
+
+.seq-entry.sub-entry {
+  margin-left: 24px;
+  border-left: 2px solid var(--border-bright);
+}
+
+.seq-entry.sub-entry .seq-left {
+  padding-left: 24px;
+}
+
+.seq-left {
+  background: var(--bg-panel);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.seq-name {
+  color: var(--text-bright);
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.seq-code-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.seq-code {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.seq-length {
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.seq-bytes {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+  padding-left: 8px;
+}
+
+.byte-hex {
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+}
+
+.byte-hex.esc { color: var(--esc); font-weight: 600; }
+.byte-hex.bracket { color: var(--bracket); font-weight: 600; }
+.byte-hex.number { color: var(--number); font-weight: 600; }
+.byte-hex.letter { color: var(--letter); font-weight: 600; }
+.byte-hex.semicolon { color: var(--semicolon); font-weight: 600; }
+
+.byte-placeholder {
+  color: var(--purple);
+  font-style: italic;
+  min-width: 24px;
+  text-align: center;
+}
+
+
+.seq-desc {
+  background: var(--bg-panel);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seq-note {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-style: italic;
+}
+
+.seq-params {
+  margin-top: 4px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-bright);
+}
+
+.param-item {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin: 2px 0;
+}
+
+.param-value {
+  color: var(--number);
+  font-weight: 600;
+}
+
+.seq-terminal {
+  background: #0c0c0c;
+  padding: 6px 8px;
+  color: #ffffff;
+  font-size: 11px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  min-height: 60px;
+}
+
+.term-line {
+  white-space: pre;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.term-input {
+  color: var(--text-dim);
+}
+
+.term-input::before {
+  content: '$ ';
+  color: var(--cyan);
+}
+
+.term-output {
+  color: #ffffff;
+}
+
+.cursor-block {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #ffffff;
+  vertical-align: text-bottom;
+}
+
+.seq-entry:hover .cursor-block {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.play-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+  transition: all 0.1s;
+  z-index: 10;
+}
+
+.play-btn:hover {
+  opacity: 1;
+  background: var(--accent-dim);
+  transform: scale(1.05);
+}
+
+.play-btn:active {
+  transform: scale(0.95);
+}
+
+.token-esc { color: var(--esc); font-weight: 600; }
+.token-bracket { color: var(--bracket); }
+.token-number { color: var(--number); }
+.token-letter { color: var(--letter); }
+.token-semicolon { color: var(--semicolon); }
+
+.color-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  padding: 1px;
+  margin: 8px 12px;
+}
+
+.color-16 { grid-template-columns: repeat(16, 1fr); }
+.color-8 { grid-template-columns: repeat(8, 1fr); }
+.color-24 { grid-template-columns: repeat(24, 1fr); }
+.color-36 { grid-template-columns: repeat(36, 1fr); }
+
+.color-cell {
+  aspect-ratio: 1.5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  transition: transform 0.1s;
+}
+
+.color-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+  border: 1px solid white;
+}
+
+.rgb-controls {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin: 8px 12px;
+}
+
+.rgb-controls-fg {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rgb-controls-bg {
+  margin-top: 12px;
+}
+
+.slider-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.slider-set {
+  flex: 1;
+}
+
+.slider-label {
+  color: var(--text-dim);
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.color-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.slider-channel {
+  color: var(--text);
+  width: 12px;
+  font-weight: 600;
+}
+
+input[type="range"] {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+input[type="range"]:hover {
+  border-color: var(--accent-dim);
+  background: var(--bg-hover);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: grab;
+  border: 2px solid var(--bg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 0 0 1px var(--border);
+  transition: all 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--accent-dim);
+  transform: scale(1.15);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 2px var(--accent);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: grab;
+  border: 2px solid var(--bg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  background: var(--accent-dim);
+  transform: scale(1.15);
+}
+
+.slider-value {
+  color: var(--number);
+  font-size: 11px;
+  width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.rgb-preview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.preview-box {
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px;
+}
+
+.rgb-terminal-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+}
+
+.c-escapes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 4px;
+  padding: 8px 12px;
+}
+
+.c-escape-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.c-escape-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-dim);
+}
+
+.c-escape-code {
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+.c-escape-desc {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.winapi-example {
+  background: var(--bg);
+  border: 1px solid var(--purple);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin: 8px 12px;
+}
+
+.winapi-example pre {
+  color: var(--text);
+  font-size: 11px;
+  overflow-x: auto;
+}
+
+.winapi-note {
+  background: var(--bg-alt);
+  border-left: 3px solid var(--purple);
+  padding: 6px 12px;
+  margin: 8px 12px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.flag-required {
+  display: inline-block;
+  background: var(--orange);
+  color: var(--bg);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 9px;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.key-input {
+  background: var(--bg);
+  border: 1px solid var(--cyan);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  margin: 2px;
+  display: inline-block;
+  font-size: 10px;
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.copied-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+  color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.copied-toast.show {
+  opacity: 1;
+}
+
+.practical-example {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 8px 12px;
+  padding: 12px;
+}
+
+.practical-title {
+  color: var(--accent);
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.practical-code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  font-size: 11px;
+  margin: 8px 0;
+  overflow-x: auto;
+}
+
+.seq-warning {
+  color: var(--orange);
+  font-size: 9px;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.seq-required-flag {
+  display: inline-block;
+  background: var(--orange);
+  color: var(--bg);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 8px;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+.seq-grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.seq-grouped-header {
+  background: var(--bg-panel);
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border-bright);
+  text-align: center;
+}
+
+.seq-compact-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 340px;
+  gap: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  margin-bottom: 1px;
+}
+
+.seq-compact-row:hover {
+  border-color: var(--accent-dim);
+}
+
+.seq-compact-entry {
+  background: var(--bg-panel);
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px 12px;
+  align-items: start;
+  cursor: pointer;
+}
+
+.seq-compact-entry-left {
+  border-right: 1px solid var(--border);
+}
+
+.seq-compact-name {
+  color: var(--text-bright);
+  font-weight: bold;
+  font-size: 18px;
+  grid-row: 1 / 3;
+  grid-column: 1;
+  white-space: nowrap;
+  align-self: start;
+  padding-top: 2px;
+}
+
+.seq-compact-code-group {
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.seq-compact-code {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.seq-compact-bytes {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.seq-compact-desc {
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.4;
+  grid-row: 1;
+  grid-column: 3;
+  padding-left: 12px;
+  align-self: start;
+  padding-top: 2px;
+}
+
+.seq-compact-terminal {
+  background: var(--bg-code);
+  border-left: 1px solid var(--border);
+  padding: 8px 12px;
+  min-height: 60px;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  position: relative;
+}
+
+.seq-compact-row-separator {
+  background: var(--border);
+  width: 1px;
+}
+
+.seq-grouped-entry {
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  gap: 1px;
+  background: var(--border);
+  border-left: 3px solid var(--border-bright);
+  margin-left: 12px;
+}
+
+.seq-grouped-entry .seq-code {
+  font-size: 12px;
+}
+
+.seq-grouped-entry .seq-bytes {
+  font-size: 11px;
+  justify-content: flex-start;
+}
+
+.seq-grouped-entry .seq-bytes .byte-hex:not(.variant-byte) {
+  opacity: 0.3;
+}
+
+.seq-grouped-entry .seq-bytes .variant-byte {
+  font-weight: 700;
+}
+
+@media (max-width: 1400px) {
+  .seq-entry, .seq-grouped-entry {
+    grid-template-columns: 280px 1fr 300px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .seq-entry, .seq-grouped-entry {
+    grid-template-columns: 1fr;
+  }
+  
+  .seq-terminal {
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+}
+
+/* Interactive terminal styles */
+.live-terminal {
+  background: #0c0c0c;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  margin: 8px 12px;
+  min-height: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #00ff00;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+#liveOutput {
+  min-height: 80px;
+}
+
+.terminal-controls {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.terminal-btn {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.1s;
+}
+
+.terminal-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="header">
+    <div class="title">
+      <span>◼</span>
+      <span>ANSI/VT TERMINAL SEQUENCES</span>
+    </div>
+    <div class="status">
+      <span>VT100/XTERM/WIN32</span>
+      <span style="color: var(--green)">● READY</span>
+      <span id="copiedCount">0 copied</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a href="#escape">C-escape</a>
+    <a href="#cursor">cursor</a>
+    <a href="#erase">erase</a>
+    <a href="#format">format</a>
+    <a href="#colors">colors</a>
+    <a href="#256">256-bit</a>
+    <a href="#rgb">rgb</a>
+    <a href="#scroll">scroll</a>
+    <a href="#screen">screen</a>
+    <a href="#modes">modes</a>
+    <a href="#input">input</a>
+    <a href="#query">query</a>
+    <a href="#osc">osc</a>
+    <a href="#advanced">advanced</a>
+    <a href="#winapi">winapi</a>
+    <a href="#practical">practical</a>
+    <a href="#internals">internals</a>
+  </nav>
+
+  <!-- Copied Toast -->
+  <div class="copied-toast" id="copiedToast">Sequence Copied!</div>
+
+  <!-- C Escape Sequences -->
+  <section class="section" id="escape">
+    <div class="section-header" onclick="toggleSection(this)">
+      C ESCAPE SEQUENCES
+      <span style="font-size: 10px; color: var(--text-dim)">Basic character escapes</span>
+    </div>
+    <div class="section-content">
+      <div class="c-escapes">
+        <div class="c-escape-item" onclick="copySequence('\\n', this)">
+          <span class="c-escape-code">\n</span>
+          <span class="c-escape-desc">newline</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\r', this)">
+          <span class="c-escape-code">\r</span>
+          <span class="c-escape-desc">return</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\t', this)">
+          <span class="c-escape-code">\t</span>
+          <span class="c-escape-desc">tab</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\b', this)">
+          <span class="c-escape-code">\b</span>
+          <span class="c-escape-desc">backspace</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\f', this)">
+          <span class="c-escape-code">\f</span>
+          <span class="c-escape-desc">form feed</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\v', this)">
+          <span class="c-escape-code">\v</span>
+          <span class="c-escape-desc">vtab</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\a', this)">
+          <span class="c-escape-code">\a</span>
+          <span class="c-escape-desc">bell</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\\\', this)">
+          <span class="c-escape-code">\\</span>
+          <span class="c-escape-desc">backslash</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence(String.fromCharCode(34), this)">
+          <span class="c-escape-code">\"</span>
+          <span class="c-escape-desc">quote</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence(String.fromCharCode(39), this)">
+          <span class="c-escape-code">\'</span>
+          <span class="c-escape-desc">apostrophe</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\x00', this)">
+          <span class="c-escape-code">\0</span>
+          <span class="c-escape-desc">null</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\x1b', this)">
+          <span class="c-escape-code">\x1b</span>
+          <span class="c-escape-desc">ESC hex</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\033', this)">
+          <span class="c-escape-code">\033</span>
+          <span class="c-escape-desc">ESC octal</span>
+        </div>
+        <div class="c-escape-item" onclick="copySequence('\\e', this)">
+          <span class="c-escape-code">\e</span>
+          <span class="c-escape-desc">ESC (gcc)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cursor Control -->
+  <section class="section" id="cursor">
+    <div class="section-header" onclick="toggleSection(this)">
+      CURSOR CONTROL
+      <span style="font-size: 10px; color: var(--text-dim)">Movement and positioning</span>
+    </div>
+    <div class="section-content">
+      
+      <div class="seq-entry" data-sequence="\x1b[1A">
+        <div class="seq-left">
+          <div class="seq-name">Cursor Up (CUU)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">A</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">41</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Move cursor up by n rows (default 1). Cursor stays in same column.
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">n</span> number of lines to move (default: 1)</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCursorUp">
+          <div class="term-line term-input">echo -e "Line1\nLine2\nLine3" && printf "\x1b[2A"</div>
+          <div class="term-line term-output">Line1</div>
+          <div class="term-line term-output">Line2<span class="cursor-block"></span></div>
+          <div class="term-line term-output">Line3</div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[2A', 'termCursorUp')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1B">
+        <div class="seq-left">
+          <div class="seq-name">Cursor Down (CUD)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">B</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">42</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Move cursor down by n rows (default 1). Cursor stays in same column.
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">n</span> number of lines to move (default: 1)</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCursorDown">
+          <div class="term-line term-input">printf "Start\x1b[1B"</div>
+          <div class="term-line term-output">Start</div>
+          <div class="term-line term-output"><span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[1B', 'termCursorDown')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1C">
+        <div class="seq-left">
+          <div class="seq-name">Cursor Forward (CUF)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">C</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">43</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Move cursor right by n columns (default 1).
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">n</span> number of columns to move (default: 1)</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCursorForward">
+          <div class="term-line term-input">printf "Start\x1b[5C" && echo "End"</div>
+          <div class="term-line term-output">Start     End<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[5C', 'termCursorForward')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1D">
+        <div class="seq-left">
+          <div class="seq-name">Cursor Back (CUB)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">D</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">44</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Move cursor left by n columns (default 1).
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">n</span> number of columns to move (default: 1)</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCursorBack">
+          <div class="term-line term-input">printf "12345\x1b[3D" && echo "X"</div>
+          <div class="term-line term-output">12X45<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[3D', 'termCursorBack')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1;1H">
+        <div class="seq-left">
+          <div class="seq-name">Set Cursor Position (CUP/HVP)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">row</span><span class="token-semicolon">;</span><span class="token-number">col</span><span class="token-letter">H</span>
+            </div>
+            <div class="seq-length">[6+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">48</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Move cursor to specific row and column (1-based). Also works with 'f' instead of 'H'.
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">row</span> line number (1-based, default: 1)</div>
+            <div class="param-item"><span class="param-value">col</span> column number (1-based, default: 1)</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCursorPos">
+          <div class="term-line term-input">clear && printf "\x1b[5;10HX"</div>
+          <div class="term-line term-output">         X<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[5;10H', 'termCursorPos')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[s">
+        <div class="seq-left">
+          <div class="seq-name">Save Cursor Position</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">s</span>
+            </div>
+            <div class="seq-length">[3 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex letter">73</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Save current cursor position and attributes. Can be restored with ESC[u.
+        </div>
+        <div class="seq-terminal" id="termSaveCursor">
+          <div class="term-line term-input">printf "A\x1b[s B C\x1b[u!"</div>
+          <div class="term-line term-output">A! B C<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[s', 'termSaveCursor')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[u">
+        <div class="seq-left">
+          <div class="seq-name">Restore Cursor Position</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">u</span>
+            </div>
+            <div class="seq-length">[3 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex letter">75</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Restore cursor to previously saved position (from ESC[s).
+        </div>
+        <div class="seq-terminal" id="termRestoreCursor">
+          <div class="term-line term-input">See save position example</div>
+          <div class="term-line term-output">Pairs with ESC[s<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[u', 'termRestoreCursor')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry" data-sequence="\x1b[?25l">
+          <div class="seq-left">
+            <div class="seq-name">Hide Cursor</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25</span><span class="token-number">l</span>
+              </div>
+              <div class="seq-length">[6 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F</span>
+              <span class="byte-hex number">32</span>
+              <span class="byte-hex number">35</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+          </div>
+          <div class="seq-terminal" id="termHideCursor">
+            <div class="term-line term-output">hide cursor</div>
+            <div class="term-line term-output">Text with no cursor</div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[?25l', 'termHideCursor')">▶ Play</button>
+          </div>
+        </div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?25h">
+          <div class="seq-left">
+            <div class="seq-name">Show Cursor</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25</span><span class="token-number">h</span>
+              </div>
+              <div class="seq-length">[6 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F</span>
+              <span class="byte-hex number">32</span>
+              <span class="byte-hex number">35</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+          </div>
+          <div class="seq-terminal" id="termShowCursor">
+            <div class="term-line term-output">show cursor</div>
+            <div class="term-line term-output">Text with cursor <span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[?25h', 'termShowCursor')">▶ Play</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>SetConsoleCursorPosition(hConsole, {X, Y})</code> - Note: WinAPI uses 0-based coordinates while ANSI uses 1-based. For cursor visibility: <code>SetConsoleCursorInfo(hConsole, &cursorInfo)</code> with <code>cursorInfo.bVisible</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Erase Functions -->
+  <section class="section" id="erase">
+    <div class="section-header" onclick="toggleSection(this)">
+      ERASE & CLEAR FUNCTIONS
+      <span style="font-size: 10px; color: var(--text-dim)">Screen and line clearing</span>
+    </div>
+    <div class="section-content">
+      <div class="seq-grouped">
+        <div class="seq-grouped-header">
+          <div class="seq-name">Erase Display (ED) & Erase Line (EL)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">J</span> / <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">K</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">XX</span>
+            <span class="byte-hex letter">4A</span> / <span class="byte-hex letter">4B</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry" data-sequence="\x1b[J">
+          <div class="seq-left">
+            <div class="seq-name">Erase to End of Screen</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">J</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">30</span>
+              <span class="byte-hex letter">4A</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase from cursor to end of screen
+          </div>
+          <div class="seq-terminal" id="termEraseEnd">
+            <div class="term-line term-output">end of screen</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output">Text above cursor<span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[J', 'termEraseEnd')">▶ Play</button>
+          </div>
+        </div>
+        <div class="seq-compact-entry" data-sequence="\x1b[K">
+          <div class="seq-left">
+            <div class="seq-name">Erase to End of Line</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">K</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">30</span>
+              <span class="byte-hex letter">4B</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase from cursor to end of line
+          </div>
+          <div class="seq-terminal" id="termEraseEOL">
+            <div class="term-line term-output">end of line</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output">Text before cursor<span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[K', 'termEraseEOL')">▶ Play</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry" data-sequence="\x1b[1J">
+          <div class="seq-left">
+            <div class="seq-name">Erase to Start of Screen</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">J</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">31</span>
+              <span class="byte-hex letter">4A</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase from start of screen to cursor
+          </div>
+          <div class="seq-terminal" id="termEraseStart">
+            <div class="term-line term-output">start of screen</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output"><span class="cursor-block"></span>Text below cursor</div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[1J', 'termEraseStart')">▶ Play</button>
+          </div>
+        </div>
+        <div class="seq-compact-entry" data-sequence="\x1b[1K">
+          <div class="seq-left">
+            <div class="seq-name">Erase to Start of Line</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">K</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">31</span>
+              <span class="byte-hex letter">4B</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase from start of line to cursor
+          </div>
+          <div class="seq-terminal" id="termEraseSOL">
+            <div class="term-line term-output">start of line</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output"><span class="cursor-block"></span>Text after cursor</div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[1K', 'termEraseSOL')">▶ Play</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry" data-sequence="\x1b[2J">
+          <div class="seq-left">
+            <div class="seq-name">Erase Entire Screen</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">J</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32</span>
+              <span class="byte-hex letter">4A</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase entire screen
+          </div>
+          <div class="seq-terminal" id="termEraseAll">
+            <div class="term-line term-output">entire screen</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output"><span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[2J', 'termEraseAll')">▶ Play</button>
+          </div>
+        </div>
+        <div class="seq-compact-entry" data-sequence="\x1b[2K">
+          <div class="seq-left">
+            <div class="seq-name">Erase Entire Line</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">K</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32</span>
+              <span class="byte-hex letter">4B</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Erase entire current line
+          </div>
+          <div class="seq-terminal" id="termEraseLine">
+            <div class="term-line term-output">entire line</div>
+            <div class="term-line term-output">....</div>
+            <div class="term-line term-output"><span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[2K', 'termEraseLine')">▶ Play</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[3J">
+        <div class="seq-left">
+          <div class="seq-name">Erase Scrollback</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">3</span><span class="token-letter">J</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">33</span>
+            <span class="byte-hex letter">4A</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Erase scrollback buffer (all lines that have scrolled off screen).
+          <div class="seq-warning">May not be supported on all terminals</div>
+        </div>
+        <div class="seq-terminal" id="termEraseScrollback">
+          <div class="term-line term-output">Scrollback cleared<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[3J', 'termEraseScrollback')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>FillConsoleOutputCharacter()</code> + <code>FillConsoleOutputAttribute()</code> to erase screen regions. Use <code>GetConsoleScreenBufferInfo()</code> to get dimensions.
+      </div>
+    </div>
+  </section>
+
+  <!-- Text Formatting -->
+  <section class="section" id="format">
+    <div class="section-header" onclick="toggleSection(this)">
+      TEXT FORMATTING (SGR)
+      <span style="font-size: 10px; color: var(--text-dim)">Select Graphic Rendition</span>
+    </div>
+    <div class="section-content">
+      <div class="seq-grouped">
+        <div class="seq-grouped-header">
+          <div class="seq-name">Select Graphic Rendition (SGR)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">m</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">XX</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+        </div>
+        <div class="seq-grouped-entry" data-sequence="\x1b[0m">
+          <div class="seq-left">
+            <div class="seq-name">Reset All Attributes</div>
+            <div class="seq-code-line">
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">m</span>
+              </div>
+              <div class="seq-length">[4 bytes]</div>
+            </div>
+            <div class="seq-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">30</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-desc">
+            Reset all text attributes to default. Equivalent to ESC[m when no parameter given.
+          </div>
+          <div class="seq-terminal" id="termReset">
+            <div class="term-line term-input">printf "\x1b[31mRED\x1b[0mNORMAL"</div>
+            <div class="term-line term-output"><span style="color:#f85149">RED</span>NORMAL<span class="cursor-block"></span></div>
+            <button class="play-btn" onclick="playSequence(event, '\\x1b[0m', 'termReset')">▶ Play</button>
+          </div>
+        </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[1m">
+          <div class="seq-compact-name">Bold / Bright</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">31</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Makes text bold/bright</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[22m">
+          <div class="seq-compact-name">Normal Intensity</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">22</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 32</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off bold and faint</div>
+        </div>
+        <div class="seq-compact-terminal" id="termBoldNormal">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="font-weight:bold">Bold: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[1m', 'termBoldNormal')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[3m">
+          <div class="seq-compact-name">Italic</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">3</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">33</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Makes text italic. Not supported in classic Windows console.</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[23m">
+          <div class="seq-compact-name">Italic Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">23</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 33</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off italic</div>
+        </div>
+        <div class="seq-compact-terminal" id="termItalicOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="font-style:italic">Italic: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[3m', 'termItalicOff')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[4m">
+          <div class="seq-compact-name">Underline</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">4</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">34</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Adds underline to text</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[24m">
+          <div class="seq-compact-name">Underline Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">24</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 34</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off underline</div>
+        </div>
+        <div class="seq-compact-terminal" id="termUnderlineOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="text-decoration:underline">Underline: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[4m', 'termUnderlineOff')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[5m">
+          <div class="seq-compact-name">Blink</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">5</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">35</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Makes text blink. Not widely supported.</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[25m">
+          <div class="seq-compact-name">Blink Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">25</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 35</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off blink</div>
+        </div>
+        <div class="seq-compact-terminal" id="termBlinkOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="animation:blink 1s infinite">Blink: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[5m', 'termBlinkOff')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[7m">
+          <div class="seq-compact-name">Reverse Video</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">7</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">37</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Swaps foreground and background colors</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[27m">
+          <div class="seq-compact-name">Reverse Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">27</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 37</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off reverse video</div>
+        </div>
+        <div class="seq-compact-terminal" id="termReverseOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="background:#ffffff;color:#000000">Reverse: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[7m', 'termReverseOff')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[8m">
+          <div class="seq-compact-name">Conceal / Hidden</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">8</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">38</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Makes text invisible. May not be supported.</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[28m">
+          <div class="seq-compact-name">Conceal Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">28</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 38</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off conceal</div>
+        </div>
+        <div class="seq-compact-terminal" id="termConcealOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="opacity:0">Conceal: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[8m', 'termConcealOff')">▶ Play</button>
+        </div>
+      </div>
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[9m">
+          <div class="seq-compact-name">Strikethrough</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">9</span><span class="token-letter">m</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">39</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Adds strikethrough to text. May not be supported.</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[29m">
+          <div class="seq-compact-name">Strikethrough Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">29</span><span class="token-letter">m</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">32 39</span>
+              <span class="byte-hex letter">6D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Turn off strikethrough</div>
+        </div>
+        <div class="seq-compact-terminal" id="termStrikeOff">
+          <div class="term-line term-output">No format: Sample text</div>
+          <div class="term-line term-output">Normal: Sample text</div>
+          <div class="term-line term-output"><span style="text-decoration:line-through">Strike: Sample text</span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[9m', 'termStrikeOff')">▶ Play</button>
+        </div>
+      </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1;4;31m">
+        <div class="seq-left">
+          <div class="seq-name">Combined Attributes</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-semicolon">;</span><span class="token-number">4</span><span class="token-semicolon">;</span><span class="token-number">31</span><span class="token-letter">m</span>
+            </div>
+            <div class="seq-length">[8 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">31</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex number">34</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex number">33 31</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Multiple attributes can be combined using semicolons. Example: Bold + Underline + Red foreground.
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">1</span> bold</div>
+            <div class="param-item"><span class="param-value">4</span> underline</div>
+            <div class="param-item"><span class="param-value">31</span> red foreground</div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="termCombined">
+          <div class="term-line term-input">printf "\x1b[1;4;31mCOMBO\x1b[0m"</div>
+          <div class="term-line term-output"><span style="font-weight:bold;text-decoration:underline;color:#f85149">COMBO</span><span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[1;4;31m', 'termCombined')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>SetConsoleTextAttribute()</code> with flags like <code>FOREGROUND_INTENSITY</code>, <code>COMMON_LVB_UNDERSCORE</code>, <code>COMMON_LVB_REVERSE_VIDEO</code>. Use <code>ENABLE_VIRTUAL_TERMINAL_PROCESSING</code> for full SGR support.
+      </div>
+    </div>
+  </section>
+
+  <!-- Basic Colors -->
+  <section class="section" id="colors">
+    <div class="section-header" onclick="toggleSection(this)">
+      BASIC COLORS (3/4-BIT)
+      <span style="font-size: 10px; color: var(--text-dim)">Standard 16 colors</span>
+    </div>
+    <div class="section-content">
+      <div class="seq-grouped">
+        <div class="seq-grouped-header">
+          <div class="seq-name">Basic Colors (8-color palette)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">3X</span><span class="token-letter">m</span> / <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">4X</span><span class="token-letter">m</span> / <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">9X</span><span class="token-letter">m</span>
+            </div>
+            <div class="seq-length">[4-5 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">33 XX</span>
+            <span class="byte-hex letter">6D</span> / <span class="byte-hex variant-byte number">34 XX</span> / <span class="byte-hex variant-byte number">39 XX</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; padding: 8px 12px;">
+          <div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Foreground (30-37)</div>
+            <div class="color-grid color-8">
+              <div class="color-cell" style="background:#000000;color:#fff" onclick="updateBasicColorTerminal('\x1b[30m', 'fg', '#000000', event)" data-sequence="\x1b[30m">30</div>
+              <div class="color-cell" style="background:#800000;color:#fff" onclick="updateBasicColorTerminal('\x1b[31m', 'fg', '#800000', event)" data-sequence="\x1b[31m">31</div>
+              <div class="color-cell" style="background:#008000;color:#fff" onclick="updateBasicColorTerminal('\x1b[32m', 'fg', '#008000', event)" data-sequence="\x1b[32m">32</div>
+              <div class="color-cell" style="background:#808000;color:#fff" onclick="updateBasicColorTerminal('\x1b[33m', 'fg', '#808000', event)" data-sequence="\x1b[33m">33</div>
+              <div class="color-cell" style="background:#000080;color:#fff" onclick="updateBasicColorTerminal('\x1b[34m', 'fg', '#000080', event)" data-sequence="\x1b[34m">34</div>
+              <div class="color-cell" style="background:#800080;color:#fff" onclick="updateBasicColorTerminal('\x1b[35m', 'fg', '#800080', event)" data-sequence="\x1b[35m">35</div>
+              <div class="color-cell" style="background:#008080;color:#fff" onclick="updateBasicColorTerminal('\x1b[36m', 'fg', '#008080', event)" data-sequence="\x1b[36m">36</div>
+              <div class="color-cell" style="background:#c0c0c0;color:#000" onclick="updateBasicColorTerminal('\x1b[37m', 'fg', '#c0c0c0', event)" data-sequence="\x1b[37m">37</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Background (40-47)</div>
+            <div class="color-grid color-8">
+              <div class="color-cell" style="background:#000000;color:#fff" onclick="updateBasicColorTerminal('\x1b[40m', 'bg', '#000000', event)" data-sequence="\x1b[40m">40</div>
+              <div class="color-cell" style="background:#800000;color:#fff" onclick="updateBasicColorTerminal('\x1b[41m', 'bg', '#800000', event)" data-sequence="\x1b[41m">41</div>
+              <div class="color-cell" style="background:#008000;color:#fff" onclick="updateBasicColorTerminal('\x1b[42m', 'bg', '#008000', event)" data-sequence="\x1b[42m">42</div>
+              <div class="color-cell" style="background:#808000;color:#fff" onclick="updateBasicColorTerminal('\x1b[43m', 'bg', '#808000', event)" data-sequence="\x1b[43m">43</div>
+              <div class="color-cell" style="background:#000080;color:#fff" onclick="updateBasicColorTerminal('\x1b[44m', 'bg', '#000080', event)" data-sequence="\x1b[44m">44</div>
+              <div class="color-cell" style="background:#800080;color:#fff" onclick="updateBasicColorTerminal('\x1b[45m', 'bg', '#800080', event)" data-sequence="\x1b[45m">45</div>
+              <div class="color-cell" style="background:#008080;color:#fff" onclick="updateBasicColorTerminal('\x1b[46m', 'bg', '#008080', event)" data-sequence="\x1b[46m">46</div>
+              <div class="color-cell" style="background:#c0c0c0;color:#000" onclick="updateBasicColorTerminal('\x1b[47m', 'bg', '#c0c0c0', event)" data-sequence="\x1b[47m">47</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Bright Foreground (90-97)</div>
+            <div class="color-grid color-8">
+              <div class="color-cell" style="background:#808080;color:#fff" onclick="updateBasicColorTerminal('\x1b[90m', 'fg', '#808080', event)" data-sequence="\x1b[90m">90</div>
+              <div class="color-cell" style="background:#ff0000;color:#fff" onclick="updateBasicColorTerminal('\x1b[91m', 'fg', '#ff0000', event)" data-sequence="\x1b[91m">91</div>
+              <div class="color-cell" style="background:#00ff00;color:#000" onclick="updateBasicColorTerminal('\x1b[92m', 'fg', '#00ff00', event)" data-sequence="\x1b[92m">92</div>
+              <div class="color-cell" style="background:#ffff00;color:#000" onclick="updateBasicColorTerminal('\x1b[93m', 'fg', '#ffff00', event)" data-sequence="\x1b[93m">93</div>
+              <div class="color-cell" style="background:#0000ff;color:#fff" onclick="updateBasicColorTerminal('\x1b[94m', 'fg', '#0000ff', event)" data-sequence="\x1b[94m">94</div>
+              <div class="color-cell" style="background:#ff00ff;color:#fff" onclick="updateBasicColorTerminal('\x1b[95m', 'fg', '#ff00ff', event)" data-sequence="\x1b[95m">95</div>
+              <div class="color-cell" style="background:#00ffff;color:#000" onclick="updateBasicColorTerminal('\x1b[96m', 'fg', '#00ffff', event)" data-sequence="\x1b[96m">96</div>
+              <div class="color-cell" style="background:#ffffff;color:#000" onclick="updateBasicColorTerminal('\x1b[97m', 'fg', '#ffffff', event)" data-sequence="\x1b[97m">97</div>
+            </div>
+          </div>
+        </div>
+        <div class="seq-terminal" id="basicColorTerminal" style="margin: 8px 12px;">
+          <div class="term-line term-output">No color: Sample text</div>
+          <div class="term-line term-output" id="basicColorBgOnly">BG only: Sample text</div>
+          <div class="term-line term-output" id="basicColorFgOnly">FG only: Sample text</div>
+          <div class="term-line term-output" id="basicColorBoth">Both: Sample text</div>
+          <div class="term-line term-output"><span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[39m">
+        <div class="seq-left">
+          <div class="seq-name">Default Foreground</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">39</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">33 39</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[5 bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Reset foreground to default color.
+        </div>
+        <div class="seq-terminal" id="termFgDefault">
+          <div class="term-line term-input">printf "\x1b[31mRED\x1b[39mDEFAULT"</div>
+          <div class="term-line term-output"><span style="color:#f85149">RED</span>DEFAULT<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[39m', 'termFgDefault')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[49m">
+        <div class="seq-left">
+          <div class="seq-name">Default Background</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">49</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">34 39</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[5 bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Reset background to default color.
+        </div>
+        <div class="seq-terminal" id="termBgDefault">
+          <div class="term-line term-input">printf "\x1b[44mBLUE BG\x1b[49mDEFAULT"</div>
+          <div class="term-line term-output"><span style="background:#000080">BLUE BG</span>DEFAULT<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[49m', 'termBgDefault')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE</code> combinations. Bright colors use <code>FOREGROUND_INTENSITY</code> flag. Background uses <code>BACKGROUND_*</code> flags.
+      </div>
+    </div>
+  </section>
+
+  <!-- 256 Colors -->
+  <section class="section" id="256">
+    <div class="section-header" onclick="toggleSection(this)">
+      256-COLOR MODE
+      <span style="font-size: 10px; color: var(--text-dim)">Extended palette</span>
+    </div>
+    <div class="section-content">
+      <div class="seq-entry" data-sequence="\x1b[38;5;196m">
+        <div class="seq-left">
+          <div class="seq-name">256-Color Foreground</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">38</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">33 38</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex number">35</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[8+ bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Set foreground using 256-color palette index (0-255). Palette: 0-15 standard, 16-231 6×6×6 cube, 232-255 grayscale.
+          <div class="seq-params">
+            <div class="param-item"><span class="param-value">38</span> foreground color select</div>
+            <div class="param-item"><span class="param-value">5</span> 256-color mode indicator</div>
+            <div class="param-item"><span class="param-value">n</span> color index (0-255)</div>
+          </div>
+          <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+        </div>
+        <div class="seq-terminal" id="term256Fg">
+          <div class="term-line term-input">printf "\x1b[38;5;196mCOLOR 196"</div>
+          <div class="term-line term-output"><span style="color:#ff0000">COLOR 196</span><span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[38;5;196m', 'term256Fg')">▶ Play</button>
+        </div>
+      </div>
+
+      <div style="padding:8px 12px">
+        <div style="color:var(--text-dim);font-size:10px;margin-bottom:8px;font-weight:600">STANDARD COLORS (0-15)</div>
+        <div class="color-palette color-16" id="std256"></div>
+        
+        <div style="color:var(--text-dim);font-size:10px;margin:12px 0 8px;font-weight:600">6×6×6 COLOR CUBE (16-231)</div>
+        <div class="color-256-cube" id="cube256"></div>
+        
+        <div style="color:var(--text-dim);font-size:10px;margin:12px 0 8px;font-weight:600">GRAYSCALE (232-255)</div>
+        <div class="color-palette color-24" id="gray256"></div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[48;5;196m">
+        <div class="seq-left">
+          <div class="seq-name">256-Color Background</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">48</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">34 38</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex number">35</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-placeholder">##</span>
+            <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[8+ bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Set background using 256-color palette. Same format as foreground but uses 48 instead of 38.
+          <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+        </div>
+        <div class="seq-terminal" id="term256Bg">
+          <div class="term-line term-input">printf "\x1b[48;5;196mRED BG"</div>
+          <div class="term-line term-output"><span style="background:#ff0000;color:#fff">RED BG</span><span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[48;5;196m', 'term256Bg')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> Extended via <code>ENABLE_VIRTUAL_TERMINAL_PROCESSING</code> mode. Direct API equivalent uses 16-bit color flags, limited to 16 colors without VT processing.
+      </div>
+    </div>
+  </section>
+
+  <!-- RGB Colors -->
+  <section class="section" id="rgb">
+    <div class="section-header" onclick="toggleSection(this)">
+      TRUE COLOR (24-BIT RGB)
+      <span style="font-size: 10px; color: var(--text-dim)">16.7 million colors</span>
+    </div>
+    <div class="section-content">
+      <div class="seq-entry" data-sequence="\x1b[38;2;255;128;0m">
+        <div class="seq-left">
+          <div class="seq-name">RGB Foreground Color</div>
+          <div class="seq-desc">
+            Set foreground color using 24-bit RGB values (0-255 each). Provides 16.7 million color options.
+            <div class="seq-params">
+              <div class="param-item"><span class="param-value">38</span> foreground color select</div>
+              <div class="param-item"><span class="param-value">2</span> RGB mode indicator</div>
+              <div class="param-item"><span class="param-value">R</span> red component (0-255)</div>
+              <div class="param-item"><span class="param-value">G</span> green component (0-255)</div>
+              <div class="param-item"><span class="param-value">B</span> blue component (0-255)</div>
+            </div>
+            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+          </div>
+        </div>
+        <div class="seq-right">
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">38</span><span class="token-semicolon">;</span><span class="token-number">2</span><span class="token-semicolon">;</span><span class="token-number">R</span><span class="token-semicolon">;</span><span class="token-number">G</span><span class="token-semicolon">;</span><span class="token-number">B</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            1B 5B 33 38 3B 32 3B <span class="byte-placeholder">##</span> 3B <span class="byte-placeholder">##</span> 3B <span class="byte-placeholder">##</span> 6D
+          </div>
+          <div class="seq-length">[11+ bytes]</div>
+        </div>
+        <div class="seq-terminal" id="rgbTerminal">
+          <div class="term-line term-output">No color: Sample text</div>
+          <div class="term-line term-output" style="background: rgb(0,0,0);">BG only: Sample text</div>
+          <div class="term-line term-output" style="color: rgb(255,128,0);">FG only: Sample text</div>
+          <div class="term-line term-output" style="color: rgb(255,128,0); background: rgb(0,0,0);">Both: Sample text</div>
+          <div class="term-line term-output"><span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="rgb-controls">
+        <div class="rgb-controls-fg">
+          <div class="slider-label">FOREGROUND COLOR</div>
+          <div class="slider-group">
+            <div class="slider-set">
+              <div class="color-slider">
+                <span class="slider-channel">R</span>
+                <input type="range" id="rgbFgR" min="0" max="255" value="255" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbFgRVal">255</span>
+              </div>
+              <div class="color-slider">
+                <span class="slider-channel">G</span>
+                <input type="range" id="rgbFgG" min="0" max="255" value="128" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbFgGVal">128</span>
+              </div>
+              <div class="color-slider">
+                <span class="slider-channel">B</span>
+                <input type="range" id="rgbFgB" min="0" max="255" value="0" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbFgBVal">0</span>
+              </div>
+            </div>
+            <div class="rgb-preview">
+              <div class="preview-box" id="rgbFgPreview" style="background: rgb(255,128,0); color: #000;">FG Preview</div>
+            </div>
+          </div>
+          <div style="margin-top: 8px; font-size: 10px; color: var(--text-dim); font-family: monospace;">
+            Sequence: <span id="rgbFgSeq" style="color: var(--accent);">\x1b[38;2;255;128;0m</span>
+            <button class="play-btn" style="position: static; margin-left: 8px;" onclick="copySequence(document.getElementById('rgbFgSeq').textContent, this)">Copy</button>
+          </div>
+        </div>
+
+        <div class="rgb-controls-bg">
+          <div class="slider-label">BACKGROUND COLOR</div>
+          <div class="slider-group">
+            <div class="slider-set">
+              <div class="color-slider">
+                <span class="slider-channel">R</span>
+                <input type="range" id="rgbBgR" min="0" max="255" value="0" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbBgRVal">0</span>
+              </div>
+              <div class="color-slider">
+                <span class="slider-channel">G</span>
+                <input type="range" id="rgbBgG" min="0" max="255" value="0" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbBgGVal">0</span>
+              </div>
+              <div class="color-slider">
+                <span class="slider-channel">B</span>
+                <input type="range" id="rgbBgB" min="0" max="255" value="0" oninput="updateRGBTerminal()">
+                <span class="slider-value" id="rgbBgBVal">0</span>
+              </div>
+            </div>
+            <div class="rgb-preview">
+              <div class="preview-box" id="rgbBgPreview" style="background: rgb(0,0,0); color: #fff;">BG Preview</div>
+            </div>
+          </div>
+          <div style="margin-top: 8px; font-size: 10px; color: var(--text-dim); font-family: monospace;">
+            Sequence: <span id="rgbBgSeq" style="color: var(--accent);">\x1b[48;2;0;0;0m</span>
+            <button class="play-btn" style="position: static; margin-left: 8px;" onclick="copySequence(document.getElementById('rgbBgSeq').textContent, this)">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[48;2;64;0;128m">
+        <div class="seq-left">
+          <div class="seq-name">RGB Background Color</div>
+          <div class="seq-desc">
+            Set background color using 24-bit RGB values. Same format as foreground but uses 48 instead of 38.
+            <div class="seq-params">
+              <div class="param-item"><span class="param-value">48</span> background color select</div>
+              <div class="param-item"><span class="param-value">2</span> RGB mode indicator</div>
+              <div class="param-item"><span class="param-value">R;G;B</span> RGB components (0-255 each)</div>
+            </div>
+            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+          </div>
+        </div>
+        <div class="seq-right">
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">48</span><span class="token-semicolon">;</span><span class="token-number">2</span><span class="token-semicolon">;</span><span class="token-number">R</span><span class="token-semicolon">;</span><span class="token-number">G</span><span class="token-semicolon">;</span><span class="token-number">B</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            1B 5B 34 38 3B 32 3B <span class="byte-placeholder">##</span> 3B <span class="byte-placeholder">##</span> 3B <span class="byte-placeholder">##</span> 6D
+          </div>
+          <div class="seq-length">[11+ bytes]</div>
+        </div>
+        <div class="seq-terminal" id="termRgbBg">
+          <div class="term-line term-input">printf "\x1b[48;2;64;0;128mPURPLE BG"</div>
+          <div class="term-line term-output" style="background: rgb(64,0,128); color: white;">PURPLE BG<span class="cursor-block"></span></div>
+          <button class="play-btn" onclick="playSequence(event, '\\x1b[48;2;64;0;128m', 'termRgbBg')">▶ Play</button>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> RGB colors require <code>ENABLE_VIRTUAL_TERMINAL_PROCESSING</code>. Direct API equivalent uses <code>SetConsoleTextAttribute()</code> with 16-bit color flags, or <code>WriteConsoleOutputAttribute()</code> for per-character colors.
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll & Line Operations -->
+  <section class="section" id="scroll">
+    <div class="section-header" onclick="toggleSection(this)">
+      SCROLL & LINE OPERATIONS
+      <span style="font-size: 10px; color: var(--text-dim)">Insert, delete, scroll</span>
+    </div>
+    <div class="section-content">
+      <!-- Add scroll sequences here -->
+    </div>
+  </section>
+
+  <!-- Screen & Buffer Control -->
+  <section class="section" id="screen">
+    <div class="section-header" onclick="toggleSection(this)">
+      SCREEN & BUFFER CONTROL
+      <span style="font-size: 10px; color: var(--text-dim)">Alternative buffers, window control</span>
+    </div>
+    <div class="section-content">
+      <!-- Add screen control sequences here -->
+    </div>
+  </section>
+
+  <!-- Terminal Modes -->
+  <section class="section" id="modes">
+    <div class="section-header" onclick="toggleSection(this)">
+      TERMINAL MODES
+      <span style="font-size: 10px; color: var(--text-dim)">DEC private modes and settings</span>
+    </div>
+    <div class="section-content">
+      <!-- Add terminal modes here -->
+    </div>
+  </section>
+
+  <!-- Input Sequences -->
+  <section class="section" id="input">
+    <div class="section-header" onclick="toggleSection(this)">
+      KEYBOARD INPUT SEQUENCES
+      <span style="font-size: 10px; color: var(--text-dim)">Keys generate these sequences</span>
+    </div>
+    <div class="section-content">
+      <!-- Add input sequences here -->
+    </div>
+  </section>
+
+  <!-- Query/Report Sequences -->
+  <section class="section" id="query">
+    <div class="section-header" onclick="toggleSection(this)">
+      QUERY & REPORT SEQUENCES
+      <span style="font-size: 10px; color: var(--text-dim)">Terminal responds with info</span>
+    </div>
+    <div class="section-content">
+      <!-- Add query sequences here -->
+    </div>
+  </section>
+
+  <!-- OSC Sequences -->
+  <section class="section" id="osc">
+    <div class="section-header" onclick="toggleSection(this)">
+      OSC - OPERATING SYSTEM COMMANDS
+      <span style="font-size: 10px; color: var(--text-dim)">ESC ] sequences</span>
+    </div>
+    <div class="section-content">
+      <!-- Add OSC sequences here -->
+    </div>
+  </section>
+
+  <!-- Advanced Sequences -->
+  <section class="section" id="advanced">
+    <div class="section-header" onclick="toggleSection(this)">
+      ADVANCED & SPECIAL SEQUENCES
+      <span style="font-size: 10px; color: var(--text-dim)">Less common but useful</span>
+    </div>
+    <div class="section-content">
+      <!-- Add advanced sequences here -->
+    </div>
+  </section>
+
+  <!-- Windows API Examples -->
+  <section class="section" id="winapi">
+    <div class="section-header" onclick="toggleSection(this)">
+      WINDOWS CONSOLE API
+      <span style="font-size: 10px; color: var(--text-dim)">Native Win32 functions</span>
+    </div>
+    <div class="section-content">
+      <div class="winapi-example">
+        <div class="practical-title">Basic Setup: Enable Virtual Terminal Processing</div>
+        <pre class="practical-code">#include &lt;windows.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+    // Get console handles
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hIn  = GetStdHandle(STD_INPUT_HANDLE);
+    
+    if (hOut == INVALID_HANDLE_VALUE || hIn == INVALID_HANDLE_VALUE) {
+        return 1;
+    }
+    
+    // Get current console mode
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) {
+        return 1;
+    }
+    
+    // Enable VT processing
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode)) {
+        printf("Failed to enable VT processing\n");
+        return 1;
+    }
+    
+    // Now ANSI sequences will work!
+    printf("\x1b[31mRed text\x1b[0m\n");
+    printf("\x1b[32mGreen text\x1b[0m\n");
+    
+    return 0;
+}</pre>
+      </div>
+
+      <div class="winapi-example">
+        <div class="practical-title">Get Console Size</div>
+        <pre class="practical-code">CONSOLE_SCREEN_BUFFER_INFO csbi;
+if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+    int width  = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    int height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+    printf("Console size: %dx%d\n", width, height);
+}</pre>
+      </div>
+
+      <div class="winapi-example">
+        <div class="practical-title">Get Cursor Position</div>
+        <pre class="practical-code">CONSOLE_SCREEN_BUFFER_INFO csbi;
+if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+    int x = csbi.dwCursorPosition.X;  // 0-based
+    int y = csbi.dwCursorPosition.Y;  // 0-based
+    printf("Cursor at: (%d, %d)\n", x, y);
+    // Note: ANSI uses 1-based, so add 1 for conversion
+    printf("ANSI equivalent: \x1b[%d;%dH\n", y+1, x+1);
+}</pre>
+      </div>
+
+      <div class="winapi-example">
+        <div class="practical-title">Set Cursor Position (API)</div>
+        <pre class="practical-code">HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+COORD coord = {10, 5};  // X=10, Y=5 (0-based)
+SetConsoleCursorPosition(hOut, coord);
+
+// ANSI equivalent: \x1b[6;11H (note: 1-based, swapped)</pre>
+      </div>
+
+      <div class="winapi-example">
+        <div class="practical-title">Set Text Attributes (16-bit colors)</div>
+        <pre class="practical-code">HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+WORD attr = FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_BLUE;
+SetConsoleTextAttribute(hOut, attr);
+printf("Bright red on blue\n");
+SetConsoleTextAttribute(hOut, 7);  // Reset to default</pre>
+      </div>
+
+      <div class="winapi-example">
+        <div class="practical-title">Query Cursor Position (Response Handling)</div>
+        <pre class="practical-code">// Send query sequence
+printf("\x1b[6n");  // Request cursor position
+fflush(stdout);
+
+// Read response: ESC[row;colR
+// Note: This requires raw input mode and async reading
+// For synchronous approach, use GetConsoleScreenBufferInfo() instead</pre>
+      </div>
+
+      <div class="winapi-note">
+        <strong>Important:</strong> Most ANSI sequences require <code>ENABLE_VIRTUAL_TERMINAL_PROCESSING</code> flag. 
+        Check support with <code>GetConsoleMode()</code> before using VT sequences. 
+        Windows 10 version 1511+ supports VT sequences natively.
+      </div>
+    </div>
+  </section>
+
+  <!-- Practical Examples -->
+  <section class="section" id="practical">
+    <div class="section-header" onclick="toggleSection(this)">
+      PRACTICAL EXAMPLES
+      <span style="font-size: 10px; color: var(--text-dim)">Common use cases</span>
+    </div>
+    <div class="section-content">
+      <!-- Add practical examples here -->
+    </div>
+  </section>
+
+  <!-- Console Internals -->
+  <section class="section" id="internals">
+    <div class="section-header" onclick="toggleSection(this)">
+      WINDOWS CONSOLE INTERNALS
+      <span style="font-size: 10px; color: var(--text-dim)">Under the hood</span>
+    </div>
+    <div class="section-content" style="padding: 16px;">
+      <!-- Add internals content here -->
+    </div>
+  </section>
+
+<script>
+// Global state
+let copyCount = 0;
+let lastClickedColor = null;
+let terminalStates = new Map();
+
+// Calculate sequence length in bytes
+function getSequenceLength(seq) {
+  // Handle escape sequences properly
+  let bytes = 0;
+  for (let i = 0; i < seq.length; i++) {
+    if (seq[i] === '\\' && i + 1 < seq.length) {
+      if (seq[i+1] === 'x' && i + 3 < seq.length) {
+        // Hex escape \x1b
+        bytes++;
+        i += 3;
+      } else if (seq[i+1] >= '0' && seq[i+1] <= '7') {
+        // Octal escape \033
+        bytes++;
+        i += 3;
+      } else {
+        // Simple escape \n, \r, etc.
+        bytes++;
+        i++;
+      }
+    } else {
+      bytes++;
+    }
+  }
+  return bytes;
+}
+
+// Copy sequence function
+function copySequence(text, element, event) {
+  if (event) event.stopPropagation();
+  
+  // Handle click on color cells within entries
+  if (element && (element.classList.contains('color-cell') || element.classList.contains('color-256-cell'))) {
+    lastClickedColor = text;
+    updateColorSections();
+  }
+  
+  // Convert unicode ESC to \033 for C++ compatibility
+  const cppText = text.replace(/\x1b/g, '\\033');
+  
+  // Surround with quotes for C++ string literal
+  const quotedText = `"${cppText}"`;
+  
+  navigator.clipboard.writeText(quotedText).then(() => {
+    copyCount++;
+    const countEl = document.getElementById('copiedCount');
+    if (countEl) countEl.textContent = copyCount + ' copied';
+    
+    const toast = document.getElementById('copiedToast');
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+    
+    if (element && !element.classList.contains('color-cell')) {
+      const entry = element.closest('.seq-entry');
+      if (entry) {
+        entry.style.borderColor = 'var(--green)';
+        setTimeout(() => {
+          entry.style.borderColor = '';
+        }, 300);
+      }
+    }
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+  });
+}
+
+// Toggle section collapse
+function toggleSection(header) {
+  const evt = window.event || arguments[0];
+  if (evt) evt.stopPropagation();
+  header.parentElement.classList.toggle('collapsed');
+}
+
+// Play sequence in terminal
+function playSequence(event, sequence, terminalId) {
+  if (event) event.stopPropagation();
+  
+  if (!terminalId) {
+    // Find the terminal in the same entry
+    const btn = event.target;
+    const entry = btn.closest('.seq-entry');
+    if (entry) {
+      const terminal = entry.querySelector('.seq-terminal');
+      if (terminal) terminalId = terminal.id || 'term-' + Date.now();
+    }
+  }
+  
+  if (!terminalId) return;
+  
+  // Get or create terminal state
+  if (!terminalStates.has(terminalId)) {
+    terminalStates.set(terminalId, {
+      lines: [],
+      cursorVisible: true
+    });
+  }
+  
+  const state = terminalStates.get(terminalId);
+  const terminal = document.getElementById(terminalId) || document.querySelector(`[id^="${terminalId}"]`);
+  
+  if (!terminal) return;
+  
+  // Simulate sequence execution
+  const seq = sequence.replace(/\\x1b/g, '\x1b').replace(/\\n/g, '\n');
+  
+  // Simple simulation - in real implementation would parse and execute
+  if (seq.includes('[2J')) {
+    state.lines = [];
+    state.lines.push('Screen cleared');
+  } else if (seq.includes('[0m')) {
+    state.lines.push('Reset formatting');
+  } else if (seq.includes('[31m')) {
+    state.lines.push('Red text');
+  } else if (seq.includes('[1m')) {
+    state.lines.push('Bold text');
+  } else if (seq.includes('[?25l')) {
+    state.cursorVisible = false;
+  } else if (seq.includes('[?25h')) {
+    state.cursorVisible = true;
+  } else {
+    state.lines.push(`Executed: ${sequence}`);
+  }
+  
+  // Update terminal display
+  let html = '';
+  state.lines.slice(-5).forEach(line => {
+    html += `<div class="term-line term-output">${line}</div>`;
+  });
+  if (state.cursorVisible) {
+    html += `<div class="term-line term-output"><span class="cursor-block"></span></div>`;
+  }
+  
+  terminal.innerHTML = html;
+  terminalStates.set(terminalId, state);
+}
+
+// Update color sections based on last clicked color
+function updateColorSections() {
+  if (!lastClickedColor) return;
+  
+  // Update all color cells to show they're based on last selection
+  document.querySelectorAll('.color-cell').forEach(cell => {
+    if (cell.textContent && cell.textContent.trim() !== '') {
+      // Could add visual indicator here
+    }
+  });
+}
+
+// Track last clicked colors for basic color terminals
+let lastBasicFgColor = null;
+let lastBasicBgColor = null;
+let lastBrightFgColor = null;
+
+// Update basic color terminal when a color is clicked
+function updateBasicColorTerminal(sequence, type, colorHex, evt) {
+  // Copy sequence to clipboard
+  if (evt) {
+    copySequence(sequence, null, evt);
+  } else {
+    copySequence(sequence, null, window.event);
+  }
+  
+  if (type === 'fg') {
+    lastBasicFgColor = { sequence, colorHex };
+  } else if (type === 'bg') {
+    lastBasicBgColor = { sequence, colorHex };
+  }
+  
+  // Update basic color terminal
+  const terminal = document.getElementById('basicColorTerminal');
+  if (terminal) {
+    const fgColor = lastBasicFgColor ? lastBasicFgColor.colorHex : null;
+    const bgColor = lastBasicBgColor ? lastBasicBgColor.colorHex : null;
+    
+    let html = '';
+    html += `<div class="term-line term-output">No color: Sample text</div>`;
+    if (bgColor) {
+      html += `<div class="term-line term-output" style="background: ${bgColor};">BG only: Sample text</div>`;
+    } else {
+      html += `<div class="term-line term-output" id="basicColorBgOnly">BG only: Sample text</div>`;
+    }
+    if (fgColor) {
+      html += `<div class="term-line term-output" style="color: ${fgColor};">FG only: Sample text</div>`;
+    } else {
+      html += `<div class="term-line term-output" id="basicColorFgOnly">FG only: Sample text</div>`;
+    }
+    if (fgColor && bgColor) {
+      html += `<div class="term-line term-output" style="color: ${fgColor}; background: ${bgColor};">Both: Sample text</div>`;
+    } else {
+      html += `<div class="term-line term-output" id="basicColorBoth">Both: Sample text</div>`;
+    }
+    html += `<div class="term-line term-output"><span class="cursor-block"></span></div>`;
+    
+    terminal.innerHTML = html;
+  }
+  
+  // Update bright color terminal if it's a bright color
+  if (sequence.includes('[9')) {
+    lastBrightFgColor = { sequence, colorHex };
+    const brightTerminal = document.getElementById('brightColorTerminal');
+    if (brightTerminal) {
+      let html = '';
+      html += `<div class="term-line term-output">No color: Sample text</div>`;
+      html += `<div class="term-line term-output" id="brightColorBgOnly">BG only: Sample text</div>`;
+      html += `<div class="term-line term-output" style="color: ${colorHex};">FG only: Sample text</div>`;
+      html += `<div class="term-line term-output" id="brightColorBoth">Both: Sample text</div>`;
+      html += `<div class="term-line term-output"><span class="cursor-block"></span></div>`;
+      brightTerminal.innerHTML = html;
+    }
+  }
+}
+
+// Update RGB terminal preview
+function updateRGBTerminal() {
+  const fgR = parseInt(document.getElementById('rgbFgR')?.value || '255');
+  const fgG = parseInt(document.getElementById('rgbFgG')?.value || '128');
+  const fgB = parseInt(document.getElementById('rgbFgB')?.value || '0');
+  const bgR = parseInt(document.getElementById('rgbBgR')?.value || '0');
+  const bgG = parseInt(document.getElementById('rgbBgG')?.value || '0');
+  const bgB = parseInt(document.getElementById('rgbBgB')?.value || '0');
+  
+  // Update value displays
+  const fgRVal = document.getElementById('rgbFgRVal');
+  const fgGVal = document.getElementById('rgbFgGVal');
+  const fgBVal = document.getElementById('rgbFgBVal');
+  const bgRVal = document.getElementById('rgbBgRVal');
+  const bgGVal = document.getElementById('rgbBgGVal');
+  const bgBVal = document.getElementById('rgbBgBVal');
+  
+  if (fgRVal) fgRVal.textContent = fgR;
+  if (fgGVal) fgGVal.textContent = fgG;
+  if (fgBVal) fgBVal.textContent = fgB;
+  if (bgRVal) bgRVal.textContent = bgR;
+  if (bgGVal) bgGVal.textContent = bgG;
+  if (bgBVal) bgBVal.textContent = bgB;
+  
+  const terminal = document.getElementById('rgbTerminal');
+  if (!terminal) return;
+  
+  const fgColor = `rgb(${fgR},${fgG},${fgB})`;
+  const bgColor = `rgb(${bgR},${bgG},${bgB})`;
+  const fgLuma = fgR * 0.299 + fgG * 0.587 + fgB * 0.114;
+  const bgLuma = bgR * 0.299 + bgG * 0.587 + bgB * 0.114;
+  
+  // Update preview boxes
+  const fgPreview = document.getElementById('rgbFgPreview');
+  const bgPreview = document.getElementById('rgbBgPreview');
+  if (fgPreview) {
+    fgPreview.style.background = fgColor;
+    fgPreview.style.color = fgLuma > 128 ? '#000' : '#fff';
+  }
+  if (bgPreview) {
+    bgPreview.style.background = bgColor;
+    bgPreview.style.color = bgLuma > 128 ? '#000' : '#fff';
+  }
+  
+  let html = '';
+  html += `<div class="term-line term-output">No color: Sample text</div>`;
+  html += `<div class="term-line term-output" style="background: ${bgColor};">BG only: Sample text</div>`;
+  html += `<div class="term-line term-output" style="color: ${fgColor};">FG only: Sample text</div>`;
+  html += `<div class="term-line term-output" style="color: ${fgColor}; background: ${bgColor};">Both: Sample text</div>`;
+  html += `<div class="term-line term-output"><span class="cursor-block"></span></div>`;
+  
+  terminal.innerHTML = html;
+  
+  // Update sequence displays
+  const fgSeq = `\\x1b[38;2;${fgR};${fgG};${fgB}m`;
+  const bgSeq = `\\x1b[48;2;${bgR};${bgG};${bgB}m`;
+  
+  const fgSeqEl = document.getElementById('rgbFgSeq');
+  const bgSeqEl = document.getElementById('rgbBgSeq');
+  if (fgSeqEl) fgSeqEl.textContent = fgSeq;
+  if (bgSeqEl) bgSeqEl.textContent = bgSeq;
+}
+
+// Initialize sequence lengths on load
+function initializeSequenceLengths() {
+  document.querySelectorAll('.seq-entry').forEach(entry => {
+    const codeEl = entry.querySelector('.seq-code');
+    const lengthEl = entry.querySelector('.seq-length');
+    
+    if (codeEl && lengthEl) {
+      // Extract sequence from code element
+      const seqText = codeEl.textContent;
+      // Try to find actual sequence in data attribute or reconstruct
+      const seqData = entry.dataset.sequence;
+      if (seqData) {
+        const length = getSequenceLength(seqData);
+        lengthEl.textContent = `[${length} bytes]`;
+      }
+    }
+  });
+}
+
+// Make all sequence entries clickable
+function makeEntriesClickable() {
+  document.querySelectorAll('.seq-entry').forEach(entry => {
+    const seqData = entry.dataset.sequence;
+    if (seqData) {
+      entry.addEventListener('click', (e) => {
+        // Don't copy if clicking play button or terminal
+        if (e.target.closest('.play-btn') || e.target.closest('.seq-terminal')) {
+          return;
+        }
+        copySequence(seqData, entry, e);
+      });
+    }
+  });
+  
+  // Make compact entries clickable
+  document.querySelectorAll('.seq-compact-entry').forEach(entry => {
+    const seqData = entry.dataset.sequence;
+    if (seqData) {
+      entry.addEventListener('click', (e) => {
+        // Don't copy if clicking terminal
+        if (e.target.closest('.seq-compact-terminal')) {
+          return;
+        }
+        copySequence(seqData, entry, e);
+      });
+    }
+  });
+}
+
+// Color hex bytes based on sequence tokens
+function colorHexBytes(seqBytes, seqCode) {
+  // This would need to parse the sequence and match bytes to tokens
+  // For now, return the bytes as-is - the HTML should have proper classes
+  return seqBytes;
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('ANSI Reference loaded');
+  initializeSequenceLengths();
+  makeEntriesClickable();
+  init256Colors();
+  
+  // Setup RGB controls if they exist
+  const rgbFgR = document.getElementById('rgbFgR');
+  if (rgbFgR) {
+    ['rgbFgR', 'rgbFgG', 'rgbFgB', 'rgbBgR', 'rgbBgG', 'rgbBgB'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updateRGBTerminal);
+      }
+    });
+    updateRGBTerminal();
+  }
+});
+</script>
+
+</div>
+</body>
+</html>
