@@ -347,33 +347,6 @@ body {
   51%, 100% { opacity: 0; }
 }
 
-.play-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: 10px;
-  font-weight: 600;
-  opacity: 0.8;
-  transition: all 0.1s;
-  z-index: 10;
-}
-
-.play-btn:hover {
-  opacity: 1;
-  background: var(--accent-dim);
-  transform: scale(1.05);
-}
-
-.play-btn:active {
-  transform: scale(0.95);
-}
-
 .token-esc { color: var(--esc); font-weight: 600; }
 .token-bracket { color: var(--bracket); }
 .token-number { color: var(--number); }
@@ -1025,7 +998,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">Line1</div>
           <div class="term-line term-output">Line2<span class="cursor-block"></span></div>
           <div class="term-line term-output">Line3</div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[2A', 'termCursorUp')">▶ Play</button>
         </div>
       </div>
 
@@ -1055,7 +1027,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-input">printf "Start\x1b[1B"</div>
           <div class="term-line term-output">Start</div>
           <div class="term-line term-output"><span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[1B', 'termCursorDown')">▶ Play</button>
         </div>
       </div>
 
@@ -1084,7 +1055,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termCursorForward">
           <div class="term-line term-input">printf "Start\x1b[5C" && echo "End"</div>
           <div class="term-line term-output">Start     End<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[5C', 'termCursorForward')">▶ Play</button>
         </div>
       </div>
 
@@ -1113,7 +1083,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termCursorBack">
           <div class="term-line term-input">printf "12345\x1b[3D" && echo "X"</div>
           <div class="term-line term-output">12X45<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[3D', 'termCursorBack')">▶ Play</button>
         </div>
       </div>
 
@@ -1145,7 +1114,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termCursorPos">
           <div class="term-line term-input">clear && printf "\x1b[5;10HX"</div>
           <div class="term-line term-output">         X<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[5;10H', 'termCursorPos')">▶ Play</button>
         </div>
       </div>
 
@@ -1170,7 +1138,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termSaveCursor">
           <div class="term-line term-input">printf "A\x1b[s B C\x1b[u!"</div>
           <div class="term-line term-output">A! B C<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[s', 'termSaveCursor')">▶ Play</button>
         </div>
       </div>
 
@@ -1195,64 +1162,45 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termRestoreCursor">
           <div class="term-line term-input">See save position example</div>
           <div class="term-line term-output">Pairs with ESC[s<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[u', 'termRestoreCursor')">▶ Play</button>
         </div>
       </div>
 
       <div class="seq-compact-row">
-        <div class="seq-compact-entry" data-sequence="\x1b[?25l">
-          <div class="seq-left">
-            <div class="seq-name">Hide Cursor</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25</span><span class="token-number">l</span>
-              </div>
-              <div class="seq-length">[6 bytes]</div>
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[?25l">
+          <div class="seq-compact-name">Hide Cursor</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25l</span>
+              <span class="seq-length">[6 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
-              <span class="byte-hex letter">3F</span>
-              <span class="byte-hex number">32</span>
-              <span class="byte-hex number">35</span>
+              <span class="byte-hex letter">3F 32 35</span>
               <span class="byte-hex letter">6C</span>
             </div>
           </div>
-          <div class="seq-desc">
-            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
-          </div>
-          <div class="seq-terminal" id="termHideCursor">
-            <div class="term-line term-output">hide cursor</div>
-            <div class="term-line term-output">Text with no cursor</div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[?25l', 'termHideCursor')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Make cursor invisible (DECTCEM)</div>
         </div>
+        <div class="seq-compact-row-separator"></div>
         <div class="seq-compact-entry" data-sequence="\x1b[?25h">
-          <div class="seq-left">
-            <div class="seq-name">Show Cursor</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25</span><span class="token-number">h</span>
-              </div>
-              <div class="seq-length">[6 bytes]</div>
+          <div class="seq-compact-name">Show Cursor</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?25h</span>
+              <span class="seq-length">[6 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
-              <span class="byte-hex letter">3F</span>
-              <span class="byte-hex number">32</span>
-              <span class="byte-hex number">35</span>
+              <span class="byte-hex letter">3F 32 35</span>
               <span class="byte-hex letter">68</span>
             </div>
           </div>
-          <div class="seq-desc">
-            <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
-          </div>
-          <div class="seq-terminal" id="termShowCursor">
-            <div class="term-line term-output">show cursor</div>
-            <div class="term-line term-output">Text with cursor <span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[?25h', 'termShowCursor')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Make cursor visible (DECTCEM)</div>
+        </div>
+        <div class="seq-compact-terminal" id="termCursorVis">
+          <div class="term-line term-output">Text with <span class="cursor-block"></span> cursor</div>
         </div>
       </div>
       
@@ -1288,167 +1236,119 @@ input[type="range"]::-moz-range-thumb:hover {
       </div>
       
       <div class="seq-compact-row">
-        <div class="seq-compact-entry" data-sequence="\x1b[J">
-          <div class="seq-left">
-            <div class="seq-name">Erase to End of Screen</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">J</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[J">
+          <div class="seq-compact-name">Erase to End of Screen</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">J</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">30</span>
               <span class="byte-hex letter">4A</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase from cursor to end of screen
-          </div>
-          <div class="seq-terminal" id="termEraseEnd">
-            <div class="term-line term-output">end of screen</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output">Text above cursor<span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[J', 'termEraseEnd')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase from cursor to end of screen</div>
         </div>
+        <div class="seq-compact-row-separator"></div>
         <div class="seq-compact-entry" data-sequence="\x1b[K">
-          <div class="seq-left">
-            <div class="seq-name">Erase to End of Line</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">K</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+          <div class="seq-compact-name">Erase to End of Line</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">K</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">30</span>
               <span class="byte-hex letter">4B</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase from cursor to end of line
-          </div>
-          <div class="seq-terminal" id="termEraseEOL">
-            <div class="term-line term-output">end of line</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output">Text before cursor<span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[K', 'termEraseEOL')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase from cursor to end of line</div>
+        </div>
+        <div class="seq-compact-terminal" id="termEraseEnd">
+          <div class="term-line term-output">Text above <span class="cursor-block"></span> erased</div>
         </div>
       </div>
 
       <div class="seq-compact-row">
-        <div class="seq-compact-entry" data-sequence="\x1b[1J">
-          <div class="seq-left">
-            <div class="seq-name">Erase to Start of Screen</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">J</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[1J">
+          <div class="seq-compact-name">Erase to Start of Screen</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">J</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">31</span>
               <span class="byte-hex letter">4A</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase from start of screen to cursor
-          </div>
-          <div class="seq-terminal" id="termEraseStart">
-            <div class="term-line term-output">start of screen</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output"><span class="cursor-block"></span>Text below cursor</div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[1J', 'termEraseStart')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase from start of screen to cursor</div>
         </div>
+        <div class="seq-compact-row-separator"></div>
         <div class="seq-compact-entry" data-sequence="\x1b[1K">
-          <div class="seq-left">
-            <div class="seq-name">Erase to Start of Line</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">K</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+          <div class="seq-compact-name">Erase to Start of Line</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1</span><span class="token-letter">K</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">31</span>
               <span class="byte-hex letter">4B</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase from start of line to cursor
-          </div>
-          <div class="seq-terminal" id="termEraseSOL">
-            <div class="term-line term-output">start of line</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output"><span class="cursor-block"></span>Text after cursor</div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[1K', 'termEraseSOL')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase from start of line to cursor</div>
+        </div>
+        <div class="seq-compact-terminal" id="termEraseStart">
+          <div class="term-line term-output"><span class="cursor-block"></span> Text after remains</div>
         </div>
       </div>
 
       <div class="seq-compact-row">
-        <div class="seq-compact-entry" data-sequence="\x1b[2J">
-          <div class="seq-left">
-            <div class="seq-name">Erase Entire Screen</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">J</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[2J">
+          <div class="seq-compact-name">Erase Entire Screen</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">J</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">32</span>
               <span class="byte-hex letter">4A</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase entire screen
-          </div>
-          <div class="seq-terminal" id="termEraseAll">
-            <div class="term-line term-output">entire screen</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output"><span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[2J', 'termEraseAll')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase entire screen</div>
         </div>
+        <div class="seq-compact-row-separator"></div>
         <div class="seq-compact-entry" data-sequence="\x1b[2K">
-          <div class="seq-left">
-            <div class="seq-name">Erase Entire Line</div>
-            <div class="seq-code-line">
-              <div class="seq-code">
-                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">K</span>
-              </div>
-              <div class="seq-length">[4 bytes]</div>
+          <div class="seq-compact-name">Erase Entire Line</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2</span><span class="token-letter">K</span>
+              <span class="seq-length">[4 bytes]</span>
             </div>
-            <div class="seq-bytes">
+            <div class="seq-compact-bytes">
               <span class="byte-hex esc">1B</span>
               <span class="byte-hex bracket">5B</span>
               <span class="byte-hex variant-byte number">32</span>
               <span class="byte-hex letter">4B</span>
             </div>
           </div>
-          <div class="seq-desc">
-            Erase entire current line
-          </div>
-          <div class="seq-terminal" id="termEraseLine">
-            <div class="term-line term-output">entire line</div>
-            <div class="term-line term-output">....</div>
-            <div class="term-line term-output"><span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[2K', 'termEraseLine')">▶ Play</button>
-          </div>
+          <div class="seq-compact-desc">Erase entire current line</div>
+        </div>
+        <div class="seq-compact-terminal" id="termEraseAll">
+          <div class="term-line term-output"><span class="cursor-block"></span></div>
         </div>
       </div>
 
@@ -1474,7 +1374,6 @@ input[type="range"]::-moz-range-thumb:hover {
         </div>
         <div class="seq-terminal" id="termEraseScrollback">
           <div class="term-line term-output">Scrollback cleared<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[3J', 'termEraseScrollback')">▶ Play</button>
         </div>
       </div>
 
@@ -1529,7 +1428,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="seq-terminal" id="termReset">
             <div class="term-line term-input">printf "\x1b[31mRED\x1b[0mNORMAL"</div>
             <div class="term-line term-output"><span style="color:#f85149">RED</span>NORMAL<span class="cursor-block"></span></div>
-            <button class="play-btn" onclick="playSequence(event, '\\x1b[0m', 'termReset')">▶ Play</button>
           </div>
         </div>
       <div class="seq-compact-row">
@@ -1570,7 +1468,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="font-weight:bold">Bold: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[1m', 'termBoldNormal')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1611,7 +1508,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="font-style:italic">Italic: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[3m', 'termItalicOff')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1652,7 +1548,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="text-decoration:underline">Underline: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[4m', 'termUnderlineOff')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1693,7 +1588,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="animation:blink 1s infinite">Blink: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[5m', 'termBlinkOff')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1734,7 +1628,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="background:#ffffff;color:#000000">Reverse: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[7m', 'termReverseOff')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1775,7 +1668,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="opacity:0">Conceal: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[8m', 'termConcealOff')">▶ Play</button>
         </div>
       </div>
       <div class="seq-compact-row">
@@ -1816,7 +1708,6 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="term-line term-output">No format: Sample text</div>
           <div class="term-line term-output">Normal: Sample text</div>
           <div class="term-line term-output"><span style="text-decoration:line-through">Strike: Sample text</span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[9m', 'termStrikeOff')">▶ Play</button>
         </div>
       </div>
       </div>
@@ -1852,7 +1743,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termCombined">
           <div class="term-line term-input">printf "\x1b[1;4;31mCOMBO\x1b[0m"</div>
           <div class="term-line term-output"><span style="font-weight:bold;text-decoration:underline;color:#f85149">COMBO</span><span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[1;4;31m', 'termCombined')">▶ Play</button>
         </div>
       </div>
 
@@ -1955,7 +1845,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termFgDefault">
           <div class="term-line term-input">printf "\x1b[31mRED\x1b[39mDEFAULT"</div>
           <div class="term-line term-output"><span style="color:#f85149">RED</span>DEFAULT<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[39m', 'termFgDefault')">▶ Play</button>
         </div>
       </div>
 
@@ -1979,7 +1868,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termBgDefault">
           <div class="term-line term-input">printf "\x1b[44mBLUE BG\x1b[49mDEFAULT"</div>
           <div class="term-line term-output"><span style="background:#000080">BLUE BG</span>DEFAULT<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[49m', 'termBgDefault')">▶ Play</button>
         </div>
       </div>
 
@@ -2026,7 +1914,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="term256Fg">
           <div class="term-line term-input">printf "\x1b[38;5;196mCOLOR 196"</div>
           <div class="term-line term-output"><span style="color:#ff0000">COLOR 196</span><span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[38;5;196m', 'term256Fg')">▶ Play</button>
         </div>
       </div>
 
@@ -2066,7 +1953,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="term256Bg">
           <div class="term-line term-input">printf "\x1b[48;5;196mRED BG"</div>
           <div class="term-line term-output"><span style="background:#ff0000;color:#fff">RED BG</span><span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[48;5;196m', 'term256Bg')">▶ Play</button>
         </div>
       </div>
 
@@ -2143,7 +2029,6 @@ input[type="range"]::-moz-range-thumb:hover {
           </div>
           <div style="margin-top: 8px; font-size: 10px; color: var(--text-dim); font-family: monospace;">
             Sequence: <span id="rgbFgSeq" style="color: var(--accent);">\x1b[38;2;255;128;0m</span>
-            <button class="play-btn" style="position: static; margin-left: 8px;" onclick="copySequence(document.getElementById('rgbFgSeq').textContent, this)">Copy</button>
           </div>
         </div>
 
@@ -2173,7 +2058,6 @@ input[type="range"]::-moz-range-thumb:hover {
           </div>
           <div style="margin-top: 8px; font-size: 10px; color: var(--text-dim); font-family: monospace;">
             Sequence: <span id="rgbBgSeq" style="color: var(--accent);">\x1b[48;2;0;0;0m</span>
-            <button class="play-btn" style="position: static; margin-left: 8px;" onclick="copySequence(document.getElementById('rgbBgSeq').textContent, this)">Copy</button>
           </div>
         </div>
       </div>
@@ -2203,7 +2087,6 @@ input[type="range"]::-moz-range-thumb:hover {
         <div class="seq-terminal" id="termRgbBg">
           <div class="term-line term-input">printf "\x1b[48;2;64;0;128mPURPLE BG"</div>
           <div class="term-line term-output" style="background: rgb(64,0,128); color: white;">PURPLE BG<span class="cursor-block"></span></div>
-          <button class="play-btn" onclick="playSequence(event, '\\x1b[48;2;64;0;128m', 'termRgbBg')">▶ Play</button>
         </div>
       </div>
 
@@ -2220,7 +2103,154 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Insert, delete, scroll</span>
     </div>
     <div class="section-content">
-      <!-- Add scroll sequences here -->
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[S">
+          <div class="seq-compact-name">Scroll Up</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">S</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">53</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Scroll entire display up by n lines (default 1)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[T">
+          <div class="seq-compact-name">Scroll Down</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">T</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">54</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Scroll entire display down by n lines (default 1)</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Line 1</div>
+          <div class="term-line term-output">Line 2 <span class="cursor-block"></span></div>
+          <div class="term-line term-output">Line 3</div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[L">
+          <div class="seq-compact-name">Insert Line</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">L</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">4C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Insert n blank lines at cursor (default 1)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[M">
+          <div class="seq-compact-name">Delete Line</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">M</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">4D</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Delete n lines at cursor (default 1)</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Before line</div>
+          <div class="term-line term-output"><span class="cursor-block"></span> Cursor here</div>
+          <div class="term-line term-output">After line</div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[@">
+          <div class="seq-compact-name">Insert Character</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">@</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">40</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Insert n blank characters at cursor (default 1)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[P">
+          <div class="seq-compact-name">Delete Character</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">P</span>
+              <span class="seq-length">[4+ bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex variant-byte number">(n)</span>
+              <span class="byte-hex letter">50</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Delete n characters at cursor (default 1)</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Text <span class="cursor-block"></span> here</div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[X">
+        <div class="seq-left">
+          <div class="seq-name">Erase Character</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">n</span><span class="token-letter">X</span>
+            </div>
+            <div class="seq-length">[4+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">(n)</span>
+            <span class="byte-hex letter">58</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Erase n characters at cursor (default 1). Replaces with space character.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">Erased<span class="cursor-block"></span>   text</div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>ScrollConsoleScreenBuffer()</code> for scrolling regions. Use <code>WriteConsoleOutput()</code> with CHAR_INFO array to insert/delete lines efficiently.
+      </div>
     </div>
   </section>
 
@@ -2231,7 +2261,141 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Alternative buffers, window control</span>
     </div>
     <div class="section-content">
-      <!-- Add screen control sequences here -->
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[?1049h">
+          <div class="seq-compact-name">Alt Screen Enter</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?1049h</span>
+              <span class="seq-length">[8 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 31 30 34 39</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Switch to alternative screen buffer</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?1049l">
+          <div class="seq-compact-name">Alt Screen Exit</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?1049l</span>
+              <span class="seq-length">[8 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 31 30 34 39</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Return to main screen buffer</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Alt buffer <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[?47h">
+          <div class="seq-compact-name">Save & Switch</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?47h</span>
+              <span class="seq-length">[6 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 34 37</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Save cursor and switch to alt buffer</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?47l">
+          <div class="seq-compact-name">Restore & Return</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?47l</span>
+              <span class="seq-length">[6 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 34 37</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Restore cursor and return to main buffer</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Main <span class="cursor-block"></span> buffer</div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[r">
+        <div class="seq-left">
+          <div class="seq-name">Set Scrolling Region</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">top</span><span class="token-semicolon">;</span><span class="token-number">bottom</span><span class="token-letter">r</span>
+            </div>
+            <div class="seq-length">[6+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex variant-byte number">(top)</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex variant-byte number">(bottom)</span>
+            <span class="byte-hex letter">72</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Set scrolling region from top to bottom line (both 1-based). Use <code>ESC[r</code> alone to reset to full screen.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">┌─ Scroll region ─┐</div>
+          <div class="term-line term-output">│ Scrolls here   │</div>
+          <div class="term-line term-output">└─────────────────┘</div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b]0;">
+        <div class="seq-left">
+          <div class="seq-name">Set Window Title</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">]</span><span class="token-number">0</span><span class="token-semicolon">;</span><span class="token-number">title</span><span class="token-letter">BEL</span>
+            </div>
+            <div class="seq-length">[5+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5D</span>
+            <span class="byte-hex number">30</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex variant-byte number">(title)</span>
+            <span class="byte-hex letter">07</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Set window title (OSC 0). Terminated with BEL (0x07) or ESC\ (0x1B 0x5C).
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">Window title changed <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>SetConsoleScreenBufferSize()</code> and <code>SetConsoleActiveScreenBuffer()</code> for buffer management. <code>SetConsoleTitle()</code> for window title.
+      </div>
     </div>
   </section>
 
@@ -2242,7 +2406,150 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">DEC private modes and settings</span>
     </div>
     <div class="section-content">
-      <!-- Add terminal modes here -->
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[4h">
+          <div class="seq-compact-name">Insert Mode</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">4h</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex number">34</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Enable insert mode (IRM)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[4l">
+          <div class="seq-compact-name">Replace Mode</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">4l</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex number">34</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Disable insert mode (replace mode)</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Text <span class="cursor-block"></span> mode</div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[?7h">
+          <div class="seq-compact-name">Line Wrap Enable</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?7h</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 37</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Enable automatic line wrap (DECAWM)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?7l">
+          <div class="seq-compact-name">Line Wrap Disable</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?7l</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 37</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Disable automatic line wrap</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Long line wraps or truncates <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1b[?1000h">
+          <div class="seq-compact-name">Mouse Tracking</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?1000h</span>
+              <span class="seq-length">[8 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 31 30 30 30</span>
+              <span class="byte-hex letter">68</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Enable mouse click tracking</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?1000l">
+          <div class="seq-compact-name">Mouse Off</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?1000l</span>
+              <span class="seq-length">[8 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 31 30 30 30</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Disable mouse tracking</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Mouse events tracked <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[?2004h">
+        <div class="seq-left">
+          <div class="seq-name">Bracketed Paste Mode</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?2004h</span> / <span class="token-letter">l</span>
+            </div>
+            <div class="seq-length">[8 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex letter">3F 32 30 30 34</span>
+            <span class="byte-hex letter">68</span> / <span class="byte-hex letter">6C</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Enable/disable bracketed paste mode. When enabled, pasted text is wrapped with <code>ESC[200~</code> and <code>ESC[201~</code>.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">^[[200~pasted text^[[201~</div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>SetConsoleMode()</code> with flags like <code>ENABLE_INSERT_MODE</code>, <code>ENABLE_WRAP_AT_EOL_OUTPUT</code>, <code>ENABLE_MOUSE_INPUT</code>, and <code>ENABLE_VIRTUAL_TERMINAL_INPUT</code>.
+      </div>
     </div>
   </section>
 
@@ -2253,7 +2560,182 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Keys generate these sequences</span>
     </div>
     <div class="section-content">
-      <!-- Add input sequences here -->
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left">
+          <div class="seq-compact-name">Arrow Up</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">A</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">41</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Up arrow key</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry">
+          <div class="seq-compact-name">Arrow Down</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">B</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">42</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Down arrow key</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">^[[A up, ^[[B down <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left">
+          <div class="seq-compact-name">Arrow Left</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">D</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">44</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Left arrow key</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry">
+          <div class="seq-compact-name">Arrow Right</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">C</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">43</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Right arrow key</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">^[[D left, ^[[C right <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left">
+          <div class="seq-compact-name">Home</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">H</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">48</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Home key</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry">
+          <div class="seq-compact-name">End</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">F</span>
+              <span class="seq-length">[3 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">46</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">End key</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">^[[H home, ^[[F end <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left">
+          <div class="seq-compact-name">Page Up</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">5~</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex number">35</span>
+              <span class="byte-hex letter">7E</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Page Up key</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry">
+          <div class="seq-compact-name">Page Down</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">6~</span>
+              <span class="seq-length">[4 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex number">36</span>
+              <span class="byte-hex letter">7E</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Page Down key</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">^[[5~ PgUp, ^[[6~ PgDn <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Function Keys F1-F4</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-letter">OP</span> / <span class="token-letter">OQ</span> / <span class="token-letter">OR</span> / <span class="token-letter">OS</span>
+            </div>
+            <div class="seq-length">[3 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex letter">4F</span>
+            <span class="byte-hex letter">50</span> / <span class="byte-hex letter">51</span> / <span class="byte-hex letter">52</span> / <span class="byte-hex letter">53</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Function keys F1-F4 (VT100 style). Extended function keys F5-F12 use <code>ESC[15~</code> through <code>ESC[24~</code>.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">^[OP F1, ^[OQ F2, ^[OR F3, ^[OS F4</div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>ReadConsoleInput()</code> to read keyboard events as KEY_EVENT_RECORD structures with virtual key codes.
+      </div>
     </div>
   </section>
 
@@ -2264,7 +2746,57 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Terminal responds with info</span>
     </div>
     <div class="section-content">
-      <!-- Add query sequences here -->
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Device Status Report (Cursor Position)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">6n</span>
+            </div>
+            <div class="seq-length">[4 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex number">36</span>
+            <span class="byte-hex letter">6E</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Request cursor position (DSR). Terminal responds with <code>ESC[{row};{col}R</code> (both 1-based).
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-input">printf "\x1b[6n"</div>
+          <div class="term-line term-output">Response: ^[[24;80R<span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Device Attributes (Primary DA)</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">c</span>
+            </div>
+            <div class="seq-length">[3 bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5B</span>
+            <span class="byte-hex letter">63</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Request device attributes (DA). Terminal responds with its capabilities and VT compatibility level.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">Response: ^[[?1;2c (VT100 with advanced)<span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>GetConsoleScreenBufferInfo()</code> to get cursor position and screen dimensions directly.
+      </div>
     </div>
   </section>
 
@@ -2275,7 +2807,89 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">ESC ] sequences</span>
     </div>
     <div class="section-content">
-      <!-- Add OSC sequences here -->
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Set Window Title</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">]</span><span class="token-number">0</span><span class="token-semicolon">;</span><span class="token-number">title</span><span class="token-letter">BEL</span>
+            </div>
+            <div class="seq-length">[5+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5D</span>
+            <span class="byte-hex number">30</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex variant-byte number">(title)</span>
+            <span class="byte-hex letter">07</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Set window title and icon name (OSC 0). Can also be terminated with <code>ESC\</code> (0x1B 0x5C) instead of BEL.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-input">printf "\x1b]0;My Title\x07"</div>
+          <div class="term-line term-output">Title changed <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Set Foreground Color</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">]</span><span class="token-number">10</span><span class="token-semicolon">;</span><span class="token-number">color</span><span class="token-letter">BEL</span>
+            </div>
+            <div class="seq-length">[6+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5D</span>
+            <span class="byte-hex number">31 30</span>
+            <span class="byte-hex semicolon">3B</span>
+            <span class="byte-hex variant-byte number">(color)</span>
+            <span class="byte-hex letter">07</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Set default text foreground color (OSC 10). Color can be specified as name (e.g., "red") or #RRGGBB.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-output">Foreground color set <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Hyperlink</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">]</span><span class="token-number">8</span><span class="token-semicolon">;;</span><span class="token-number">url</span><span class="token-letter">BEL</span>text<span class="token-esc">ESC</span><span class="token-bracket">]</span><span class="token-number">8</span><span class="token-semicolon">;;</span><span class="token-letter">BEL</span>
+            </div>
+            <div class="seq-length">[7+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex bracket">5D</span>
+            <span class="byte-hex number">38</span>
+            <span class="byte-hex semicolon">3B 3B</span>
+            <span class="byte-hex variant-byte number">(url)</span>
+            <span class="byte-hex letter">07</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Create clickable hyperlink (OSC 8). Start with URL, print text, then end with empty OSC 8 sequence.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-input">printf "\x1b]8;;https://example.com\x07Link\x1b]8;;\x07"</div>
+          <div class="term-line term-output"><span style="text-decoration:underline;color:#58a6ff">Link</span> <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> <code>SetConsoleTitle()</code> for window title. OSC sequences require ENABLE_VIRTUAL_TERMINAL_PROCESSING.
+      </div>
     </div>
   </section>
 
@@ -2286,7 +2900,70 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Less common but useful</span>
     </div>
     <div class="section-content">
-      <!-- Add advanced sequences here -->
+      <div class="seq-compact-row">
+        <div class="seq-compact-entry seq-compact-entry-left" data-sequence="\x1bc">
+          <div class="seq-compact-name">Reset Device (RIS)</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-letter">c</span>
+              <span class="seq-length">[2 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex letter">63</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Reset terminal to initial state (RIS)</div>
+        </div>
+        <div class="seq-compact-row-separator"></div>
+        <div class="seq-compact-entry" data-sequence="\x1b[?1l">
+          <div class="seq-compact-name">Soft Reset</div>
+          <div class="seq-compact-code-group">
+            <div class="seq-compact-code">
+              <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">?1l</span>
+              <span class="seq-length">[5 bytes]</span>
+            </div>
+            <div class="seq-compact-bytes">
+              <span class="byte-hex esc">1B</span>
+              <span class="byte-hex bracket">5B</span>
+              <span class="byte-hex letter">3F 31</span>
+              <span class="byte-hex letter">6C</span>
+            </div>
+          </div>
+          <div class="seq-compact-desc">Soft reset (DECSTR)</div>
+        </div>
+        <div class="seq-compact-terminal">
+          <div class="term-line term-output">Terminal reset <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="seq-entry">
+        <div class="seq-left">
+          <div class="seq-name">Character Set Selection</div>
+          <div class="seq-code-line">
+            <div class="seq-code">
+              <span class="token-esc">ESC</span><span class="token-letter">(</span><span class="token-number">set</span>
+            </div>
+            <div class="seq-length">[3+ bytes]</div>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span>
+            <span class="byte-hex letter">28</span>
+            <span class="byte-hex variant-byte number">(set)</span>
+          </div>
+        </div>
+        <div class="seq-desc">
+          Set G0 character set. Common sets: <code>B</code> (ASCII), <code>0</code> (DEC line drawing), <code>U</code> (null mapping). Use <code>ESC)</code> for G1, <code>ESC*</code> for G2, <code>ESC+</code> for G3.
+        </div>
+        <div class="seq-terminal">
+          <div class="term-line term-input">printf "\x1b(0"  # DEC line drawing</div>
+          <div class="term-line term-output">┌─┬─┐ Box drawing <span class="cursor-block"></span></div>
+        </div>
+      </div>
+
+      <div class="winapi-note">
+        <strong>WinAPI:</strong> Character set selection is complex. For box drawing, use Unicode characters directly with <code>WriteConsoleW()</code>.
+      </div>
     </div>
   </section>
 
