@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extended ASCII Table</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background: #000000;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .controls {
+      background: #111111;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #333;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mode-selector label {
+      font-weight: bold;
+      color: #aaa;
+    }
+
+    .mode-btn, .view-btn, .filter-btn, .charset-btn, .split-btn {
+      padding: 8px 16px;
+      background: #333;
+      border: 2px solid #444;
+      color: #ddd;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-size: 0.9em;
+    }
+
+    .mode-btn:hover, .view-btn:hover, .filter-btn:hover, .charset-btn:hover, .split-btn:hover {
+      background: #444;
+      border-color: #666;
+    }
+
+    .mode-btn.active {
+      background: #4a7c4a;
+      border-color: #6a9c6a;
+      color: #fff;
+    }
+
+    .view-btn.active {
+      background: #4a5c7c;
+      border-color: #6a7c9c;
+      color: #fff;
+    }
+
+    .filter-btn.active {
+      background: #7c4a7c;
+      border-color: #9c6a9c;
+      color: #fff;
+    }
+
+    .charset-btn.active {
+      background: #7c5c4a;
+      border-color: #9c7c6a;
+      color: #fff;
+    }
+
+    .split-btn.active {
+      background: #5c7c4a;
+      border-color: #7c9c6a;
+      color: #fff;
+    }
+
+    .table-wrapper {
+      height: 80vh;
+      overflow-y: auto;
+      background: #000000;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+
+    .table-wrapper.compact {
+      height: auto;
+      max-height: 80vh;
+      overflow-y: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #000000;
+    }
+
+    .list-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: #000000;
+    }
+
+    .list-column {
+      background: #000000;
+    }
+
+    .list-column-header {
+      background: #111111;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      color: #ffffff;
+      border: 1px solid #333;
+      border-bottom: 2px solid #555;
+      margin-bottom: 0;
+    }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 0px;
+      background: #000000;
+      padding: 0px;
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+
+    .compact-grid.zoom-1 { gap: 0px; }
+    .compact-grid.zoom-2 { gap: 0px; }
+    .compact-grid.zoom-3 { gap: 0px; }
+    .compact-grid.zoom-4 { gap: 0px; }
+    .compact-grid.zoom-5 { gap: 0px; }
+
+    .compact-cell {
+      background: #000000;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      min-height: 50px;
+      justify-content: space-between;
+      border: 1px solid #333;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .compact-cell-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+
+    .compact-cell-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .compact-cell:nth-child(16n) {
+      border-right: 1px solid #333;
+    }
+
+    .compact-grid.zoom-1 .compact-cell { padding: 4px 6px; gap: 6px; min-height: 50px; border-width: 1px; }
+    .compact-grid.zoom-2 .compact-cell { padding: 3px 5px; gap: 5px; min-height: 45px; border-width: 1px; }
+    .compact-grid.zoom-3 .compact-cell { padding: 2px 4px; gap: 4px; min-height: 40px; border-width: 1px; }
+    .compact-grid.zoom-4 .compact-cell { padding: 1px 3px; gap: 3px; min-height: 35px; border-width: 1px; }
+    .compact-grid.zoom-5 .compact-cell { padding: 0px 2px; gap: 2px; min-height: 30px; border-width: 1px; }
+
+    .compact-cell:hover {
+      background: #1a1a1a;
+      transform: scale(1.05);
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .compact-char {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .compact-grid.zoom-1 .compact-char { font-size: 1.8em; }
+    .compact-grid.zoom-2 .compact-char { font-size: 1.6em; }
+    .compact-grid.zoom-3 .compact-char { font-size: 1.4em; }
+    .compact-grid.zoom-4 .compact-char { font-size: 1.2em; }
+    .compact-grid.zoom-5 .compact-char { font-size: 1.0em; }
+
+    .compact-info {
+      font-size: 0.7em;
+      color: #cccccc;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    .compact-grid.zoom-1 .compact-info { font-size: 0.65em; }
+    .compact-grid.zoom-2 .compact-info { font-size: 0.6em; }
+    .compact-grid.zoom-3 .compact-info { font-size: 0.55em; }
+    .compact-grid.zoom-4 .compact-info { font-size: 0.5em; }
+    .compact-grid.zoom-5 .compact-info { font-size: 0.45em; }
+
+    .compact-hex {
+      color: #ff9aff;
+      font-weight: 600;
+    }
+
+    .compact-dec {
+      color: #9aff9a;
+      font-weight: 600;
+    }
+
+    .zoom-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .zoom-btn {
+      padding: 6px 12px;
+      background: #333;
+      border: 2px solid #444;
+      color: #ddd;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-size: 0.85em;
+    }
+
+    .zoom-btn:hover:not(:disabled) {
+      background: #444;
+      border-color: #666;
+    }
+
+    .zoom-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .zoom-indicator {
+      color: #aaa;
+      font-size: 0.9em;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #111111;
+      z-index: 10;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: bold;
+      color: #ffffff;
+      border-bottom: 2px solid #333;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #222;
+      transition: background 0.15s;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+
+    tbody tr:hover {
+      background: #1a1a1a;
+    }
+
+    tbody tr:active {
+      background: #2a2a2a;
+    }
+
+    .char-cell {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #4a9eff;
+      text-align: center;
+      width: 60px;
+    }
+
+    .control-char {
+      color: #ff9a4a;
+      font-size: 0.9em;
+    }
+
+    .unprintable {
+      color: #888;
+      font-style: italic;
+    }
+
+    .dec-cell {
+      color: #9aff9a;
+      font-weight: bold;
+    }
+
+    .hex-cell {
+      color: #ff9aff;
+      font-weight: bold;
+    }
+
+    .alt-cell {
+      color: #ffff9a;
+    }
+
+    .name-cell {
+      color: #cccccc;
+      font-size: 0.9em;
+    }
+
+    /* Category-based colors */
+    .cat-control { background-color: #1a001a !important; }
+    .cat-alphanumeric { background-color: #001a1a !important; }
+    .cat-punctuation { background-color: #1a1a00 !important; }
+    .cat-drawing { background-color: #001a00 !important; }
+    .cat-drawing-box { background-color: #002a00 !important; }
+    .cat-drawing-shade { background-color: #003a00 !important; }
+    .cat-drawing-symbols { background-color: #004a00 !important; }
+    .cat-writing { background-color: #1a0000 !important; }
+    .cat-writing-basic { background-color: #2a0000 !important; }
+    .cat-writing-complex { background-color: #3a0000 !important; }
+    .cat-writing-math { background-color: #4a0000 !important; }
+    .cat-accented { background-color: #00001a !important; }
+    .cat-symbols { background-color: #1a1a1a !important; }
+
+    .section-header {
+      background: #111111 !important;
+      font-weight: bold;
+      color: #aaaaaa;
+      pointer-events: none;
+    }
+
+    .section-header td {
+      padding: 4px 12px;
+      font-size: 0.85em;
+      border-bottom: 1px solid #333;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #4a7c4a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      font-family: inherit;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-box input {
+      padding: 8px 12px;
+      background: #333;
+      border: 2px solid #444;
+      color: #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      width: 200px;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #666;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .filter-selector {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-selector label {
+      font-weight: bold;
+      color: #aaa;
+      margin-right: 4px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <div class="control-row">
+        <div class="mode-selector">
+          <label>Charset:</label>
+          <button class="charset-btn active" data-charset="cp437">CP437 (DOS)</button>
+          <button class="charset-btn" data-charset="win1252">Windows-1252</button>
+          <button class="charset-btn" data-charset="iso8859">ISO-8859-1</button>
+        </div>
+        <div class="mode-selector">
+          <label>View:</label>
+          <button class="view-btn active" data-view="list">List</button>
+          <button class="view-btn" data-view="table">Table</button>
+        </div>
+        <div class="mode-selector" id="splitControls" style="display: none;">
+          <label>Range:</label>
+          <button class="split-btn active" data-split="all">All (0-255)</button>
+          <button class="split-btn" data-split="normal">Normal (0-127)</button>
+          <button class="split-btn" data-split="extended">Extended (128-255)</button>
+        </div>
+        <div class="zoom-controls" id="zoomControls" style="display: none;">
+          <label>Zoom:</label>
+          <button class="zoom-btn" id="zoomIn">+</button>
+          <span class="zoom-indicator" id="zoomLevel">Normal</span>
+          <button class="zoom-btn" id="zoomOut">−</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <div class="mode-selector">
+          <label>Copy:</label>
+          <button class="mode-btn active" data-mode="char">Char</button>
+          <button class="mode-btn" data-mode="hex">Hex</button>
+          <button class="mode-btn" data-mode="dec">Decimal</button>
+          <button class="mode-btn" data-mode="single">Single Quote</button>
+          <button class="mode-btn" data-mode="double">Double Quote</button>
+          <button class="mode-btn" data-mode="escape">Escape</button>
+          <button class="mode-btn" data-mode="alt">Alt Code</button>
+        </div>
+        <div class="search-box">
+          <label>Search:</label>
+          <input type="text" id="searchInput" placeholder="name, char, or value">
+        </div>
+      </div>
+      <div class="control-row">
+        <div class="filter-selector">
+          <label>Filter:</label>
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="control">Control</button>
+          <button class="filter-btn" data-filter="alphanumeric">Alphanumeric</button>
+          <button class="filter-btn" data-filter="punctuation">Punctuation</button>
+          <button class="filter-btn" data-filter="drawing">Drawing</button>
+          <button class="filter-btn" data-filter="drawing-box">Drawing: Box</button>
+          <button class="filter-btn" data-filter="drawing-shade">Drawing: Shade</button>
+          <button class="filter-btn" data-filter="drawing-symbols">Drawing: Symbols</button>
+          <button class="filter-btn" data-filter="writing">Writing</button>
+          <button class="filter-btn" data-filter="writing-basic">Writing: Basic</button>
+          <button class="filter-btn" data-filter="writing-complex">Writing: Complex</button>
+          <button class="filter-btn" data-filter="writing-math">Writing: Math</button>
+          <button class="filter-btn" data-filter="accented">Accented</button>
+          <button class="filter-btn" data-filter="symbols">Symbols</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrapper" id="listView">
+      <div class="list-container">
+        <div class="list-column">
+          <div class="list-column-header">Normal ASCII (0-127)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Dec</th>
+                <th>Hex</th>
+                <th>Char</th>
+                <th>Alt Code</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyLeft">
+            </tbody>
+          </table>
+        </div>
+        <div class="list-column">
+          <div class="list-column-header">Extended ASCII (128-255)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Dec</th>
+                <th>Hex</th>
+                <th>Char</th>
+                <th>Alt Code</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyRight">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrapper compact hidden" id="tableView">
+      <div class="compact-grid" id="compactGrid">
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    // CP437 (DOS/IBM PC) character mappings for 128-255
+    const CP437_Chars = [
+      'Ç', 'ü', 'é', 'â', 'ä', 'à', 'å', 'ç', 'ê', 'ë', 'è', 'ï', 'î', 'ì', 'Ä', 'Å',
+      'É', 'æ', 'Æ', 'ô', 'ö', 'ò', 'û', 'ù', 'ÿ', 'Ö', 'Ü', '¢', '£', '¥', '₧', 'ƒ',
+      'á', 'í', 'ó', 'ú', 'ñ', 'Ñ', 'ª', 'º', '¿', '⌐', '¬', '½', '¼', '¡', '«', '»',
+      '░', '▒', '▓', '│', '┤', '╡', '╢', '╖', '╕', '╣', '║', '╗', '╝', '╜', '╛', '┐',
+      '└', '┴', '┬', '├', '─', '┼', '╞', '╟', '╚', '╔', '╩', '╦', '╠', '═', '╬', '╧',
+      '╨', '╤', '╥', '╙', '╘', '╒', '╓', '╫', '╪', '┘', '┌', '█', '▄', '▌', '▐', '▀',
+      'α', 'ß', 'Γ', 'π', 'Σ', 'σ', 'µ', 'τ', 'Φ', 'Θ', 'Ω', 'δ', '∞', 'φ', 'ε', '∩',
+      '≡', '±', '≥', '≤', '⌠', '⌡', '÷', '≈', '°', '∙', '·', '√', 'ⁿ', '²', '■', ' '
+    ];
+
+    const CP437_Names = [
+      'C with Cedilla', 'u with Diaeresis', 'e with Acute', 'a with Circumflex',
+      'a with Diaeresis', 'a with Grave', 'a with Ring', 'c with Cedilla',
+      'e with Circumflex', 'e with Diaeresis', 'e with Grave', 'i with Diaeresis',
+      'i with Circumflex', 'i with Grave', 'A with Diaeresis', 'A with Ring',
+      'E with Acute', 'ae Ligature', 'AE Ligature', 'o with Circumflex',
+      'o with Diaeresis', 'o with Grave', 'u with Circumflex', 'u with Grave',
+      'y with Diaeresis', 'O with Diaeresis', 'U with Diaeresis', 'Cent',
+      'Pound', 'Yen', 'Peseta', 'Florin/Function',
+      'a with Acute', 'i with Acute', 'o with Acute', 'u with Acute',
+      'n with Tilde', 'N with Tilde', 'Feminine Ordinal', 'Masculine Ordinal',
+      'Inverted Question', 'Not Sign (corner)', 'Not Sign', 'One Half',
+      'One Quarter', 'Inverted Exclamation', 'Left Angle Quote', 'Right Angle Quote',
+      'Light Shade', 'Medium Shade', 'Dark Shade', 'Box Single Vertical',
+      'Box Single Vertical Left', 'Box Vertical Single Left Double', 'Box Vertical Double Left Single',
+      'Box Down Double Left Single', 'Box Down Single Left Double', 'Box Double Vertical Left',
+      'Box Double Vertical', 'Box Double Down Left', 'Box Double Up Left',
+      'Box Up Double Left Single', 'Box Up Single Left Double', 'Box Single Down Left',
+      'Box Single Up Right', 'Box Single Up Horizontal', 'Box Single Down Horizontal',
+      'Box Single Vertical Right', 'Box Single Horizontal', 'Box Single Cross',
+      'Box Vertical Single Right Double', 'Box Vertical Double Right Single',
+      'Box Double Up Right', 'Box Double Down Right', 'Box Double Up Horizontal',
+      'Box Double Down Horizontal', 'Box Double Vertical Right', 'Box Double Horizontal',
+      'Box Double Cross', 'Box Up Single Horizontal Double', 'Box Up Double Horizontal Single',
+      'Box Down Single Horizontal Double', 'Box Down Double Horizontal Single',
+      'Box Up Double Right Single', 'Box Up Single Right Double', 'Box Down Single Right Double',
+      'Box Down Double Right Single', 'Box Vertical Double Horizontal Single',
+      'Box Vertical Single Horizontal Double', 'Box Single Up Left', 'Box Single Down Right',
+      'Full Block', 'Lower Half Block', 'Left Half Block', 'Right Half Block', 'Upper Half Block',
+      'Alpha', 'Beta/Sharp S', 'Gamma', 'Pi', 'Sigma (upper)', 'Sigma (lower)',
+      'Mu/Micro', 'Tau', 'Phi', 'Theta', 'Omega', 'Delta', 'Infinity', 'Phi (alt)',
+      'Epsilon', 'Intersection', 'Equivalent', 'Plus-Minus', 'Greater or Equal',
+      'Less or Equal', 'Integral Top', 'Integral Bottom', 'Division', 'Approximation',
+      'Degree', 'Bullet', 'Middle Dot', 'Square Root', 'Superscript n', 'Superscript 2',
+      'Black Square', 'Non-Breaking Space'
+    ];
+
+    const CharSets = {
+      cp437: {
+        name: 'CP437 (DOS)',
+        chars: CP437_Chars,
+        names: CP437_Names
+      },
+      win1252: {
+        name: 'Windows-1252',
+        chars: null,  // Use default String.fromCharCode
+        names: [
+          'Euro Sign', 'Unused', 'Single Low Quote', 'Latin f Hook',
+          'Double Low Quote', 'Ellipsis', 'Dagger', 'Double Dagger',
+          'Circumflex', 'Per Mille', 'S with Caron', 'Single Left Angle',
+          'OE Ligature', 'Unused', 'Z with Caron', 'Unused',
+          'Unused', 'Left Single Quote', 'Right Single Quote', 'Left Double Quote',
+          'Right Double Quote', 'Bullet', 'En Dash', 'Em Dash',
+          'Small Tilde', 'Trademark', 's with Caron', 'Single Right Angle',
+          'oe Ligature', 'Unused', 'z with Caron', 'Y with Diaeresis',
+          'Non-Breaking Space', 'Inverted Exclamation', 'Cent', 'Pound',
+          'Currency', 'Yen', 'Broken Bar', 'Section',
+          'Diaeresis', 'Copyright', 'Feminine Ordinal', 'Left Angle Quote',
+          'Not Sign', 'Soft Hyphen', 'Registered', 'Macron',
+          'Degree', 'Plus-Minus', 'Superscript 2', 'Superscript 3',
+          'Acute Accent', 'Micro', 'Pilcrow', 'Middle Dot',
+          'Cedilla', 'Superscript 1', 'Masculine Ordinal', 'Right Angle Quote',
+          'One Quarter', 'One Half', 'Three Quarters', 'Inverted Question',
+          'A with Grave', 'A with Acute', 'A with Circumflex', 'A with Tilde',
+          'A with Diaeresis', 'A with Ring', 'AE Ligature', 'C with Cedilla',
+          'E with Grave', 'E with Acute', 'E with Circumflex', 'E with Diaeresis',
+          'I with Grave', 'I with Acute', 'I with Circumflex', 'I with Diaeresis',
+          'Eth', 'N with Tilde', 'O with Grave', 'O with Acute',
+          'O with Circumflex', 'O with Tilde', 'O with Diaeresis', 'Multiplication',
+          'O with Slash', 'U with Grave', 'U with Acute', 'U with Circumflex',
+          'U with Diaeresis', 'Y with Acute', 'Thorn', 'Sharp S',
+          'a with Grave', 'a with Acute', 'a with Circumflex', 'a with Tilde',
+          'a with Diaeresis', 'a with Ring', 'ae Ligature', 'c with Cedilla',
+          'e with Grave', 'e with Acute', 'e with Circumflex', 'e with Diaeresis',
+          'i with Grave', 'i with Acute', 'i with Circumflex', 'i with Diaeresis',
+          'eth', 'n with Tilde', 'o with Grave', 'o with Acute',
+          'o with Circumflex', 'o with Tilde', 'o with Diaeresis', 'Division',
+          'o with Slash', 'u with Grave', 'u with Acute', 'u with Circumflex',
+          'u with Diaeresis', 'y with Acute', 'thorn', 'y with Diaeresis'
+        ]
+      },
+      iso8859: {
+        name: 'ISO-8859-1',
+        chars: null,
+        names: null  // Similar to win1252 for 160-255, undefined for 128-159
+      }
+    };
+
+    const BaseCharNames = [
+      // Control characters (0-31)
+      'NULL', 'Start of Heading', 'Start of Text', 'End of Text',
+      'End of Transmission', 'Enquiry', 'Acknowledge', 'Bell',
+      'Backspace', 'Horizontal Tab', 'Line Feed', 'Vertical Tab',
+      'Form Feed', 'Carriage Return', 'Shift Out', 'Shift In',
+      'Data Link Escape', 'Device Control 1', 'Device Control 2', 'Device Control 3',
+      'Device Control 4', 'Negative Acknowledge', 'Synchronous Idle', 'End of Trans Block',
+      'Cancel', 'End of Medium', 'Substitute', 'Escape',
+      'File Separator', 'Group Separator', 'Record Separator', 'Unit Separator',
+      // Printable ASCII (32-126)
+      'Space', 'Exclamation Mark', 'Double Quote', 'Hash/Number',
+      'Dollar', 'Percent', 'Ampersand', 'Single Quote',
+      'Left Parenthesis', 'Right Parenthesis', 'Asterisk', 'Plus',
+      'Comma', 'Minus/Hyphen', 'Period', 'Slash',
+      'Zero', 'One', 'Two', 'Three',
+      'Four', 'Five', 'Six', 'Seven',
+      'Eight', 'Nine', 'Colon', 'Semicolon',
+      'Less Than', 'Equals', 'Greater Than', 'Question Mark',
+      'At Sign', 'A', 'B', 'C',
+      'D', 'E', 'F', 'G',
+      'H', 'I', 'J', 'K',
+      'L', 'M', 'N', 'O',
+      'P', 'Q', 'R', 'S',
+      'T', 'U', 'V', 'W',
+      'X', 'Y', 'Z', 'Left Bracket',
+      'Backslash', 'Right Bracket', 'Caret', 'Underscore',
+      'Grave/Backtick', 'a', 'b', 'c',
+      'd', 'e', 'f', 'g',
+      'h', 'i', 'j', 'k',
+      'l', 'm', 'n', 'o',
+      'p', 'q', 'r', 's',
+      't', 'u', 'v', 'w',
+      'x', 'y', 'z', 'Left Brace',
+      'Pipe/Vertical Bar', 'Right Brace', 'Tilde', 'Delete'
+    ];
+
+    const ControlAbbrev = ['NUL','SOH','STX','ETX','EOT','ENQ','ACK','BEL',
+                           'BS', 'TAB','LF', 'VT', 'FF', 'CR', 'SO', 'SI',
+                           'DLE','DC1','DC2','DC3','DC4','NAK','SYN','ETB',
+                           'CAN','EM', 'SUB','ESC','FS', 'GS', 'RS', 'US'];
+
+    const Categories = {
+      control: [...Array(32).keys(), 127],
+      alphanumeric: [...Array(26).keys()].flatMap(i => [65+i, 97+i]).concat([...Array(10).keys()].map(i => 48+i)),
+      punctuation: [32,33,34,39,40,41,44,45,46,47,58,59,63,91,92,93,95,96,123,124,125,126],
+      math: [],  // Will be populated based on charset
+      box: [],   // Will be populated based on charset
+      block: [], // Will be populated based on charset
+      accented: [], // Will be populated based on charset
+      symbols: [],   // Will be populated based on charset
+      'drawing': [],  // All drawing chars (box + block + drawing symbols)
+      'drawing-box': [],  // Box drawing only
+      'drawing-shade': [],  // Shading blocks only
+      'drawing-symbols': [],  // Other drawing symbols
+      'writing': [],  // All writing chars (alphanumeric + punctuation + math)
+      'writing-basic': [],  // Basic writing (alphanumeric + basic punctuation)
+      'writing-complex': [],  // Complex symbols
+      'writing-math': []  // Math symbols
+    };
+
+    // Update categories based on charset
+    function UpdateCategories() {
+      if (CurrentCharset === 'cp437') {
+        Categories.math = [35,36,37,42,43,60,61,62,94,158,159,171,172,224,225,227,228,229,230,236,241,242,243,244,245,246,247,248,249,251,252,253];
+        Categories.box = [179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218];
+        Categories.block = [176,177,178,219,220,221,222,223,254];
+        Categories.accented = [128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,160,161,162,163,164,165];
+        Categories.symbols = [155,156,157,166,167,168,169,170,173,174,175,226,231,232,233,234,235,237,238,239,240,250,255];
+      } else {
+        Categories.math = [35,36,37,42,43,60,61,62,94,162,163,164,165,176,177,178,179,180,181,188,189,190,215,247];
+        Categories.box = [];
+        Categories.block = [];
+        Categories.accented = [...Array(64).keys()].map(i => 192+i);
+        Categories.symbols = [128,131,134,135,136,137,138,139,149,150,151,152,153,155,161,166,167,168,169,170,171,172,173,174,175,182,183,184,185,186,187,191];
+      }
+      
+      // Build hierarchical categories
+      Categories['drawing'] = [...Categories.box, ...Categories.block, ...Categories.symbols.filter(s => [224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255].includes(s))];
+      Categories['drawing-box'] = Categories.box;
+      Categories['drawing-shade'] = Categories.block;
+      Categories['drawing-symbols'] = Categories.symbols.filter(s => [224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255].includes(s));
+      Categories['writing'] = [...Categories.alphanumeric, ...Categories.punctuation, ...Categories.math];
+      Categories['writing-basic'] = [...Categories.alphanumeric, ...Categories.punctuation.filter(p => [32,33,34,39,40,41,44,45,46,47,58,59,63].includes(p))];
+      Categories['writing-complex'] = Categories.punctuation.filter(p => [91,92,93,95,96,123,124,125,126].includes(p));
+      Categories['writing-math'] = Categories.math;
+    }
+
+    function GetCategoryClass(code) {
+      if (Categories.control.includes(code)) return 'cat-control';
+      if (Categories.alphanumeric.includes(code)) return 'cat-alphanumeric';
+      if (Categories.punctuation.includes(code)) return 'cat-punctuation';
+      if (Categories['drawing-box'].includes(code)) return 'cat-drawing-box';
+      if (Categories['drawing-shade'].includes(code)) return 'cat-drawing-shade';
+      if (Categories['drawing-symbols'].includes(code)) return 'cat-drawing-symbols';
+      if (Categories['drawing'].includes(code)) return 'cat-drawing';
+      if (Categories['writing-math'].includes(code)) return 'cat-writing-math';
+      if (Categories['writing-complex'].includes(code)) return 'cat-writing-complex';
+      if (Categories['writing-basic'].includes(code)) return 'cat-writing-basic';
+      if (Categories['writing'].includes(code)) return 'cat-writing';
+      if (Categories.accented.includes(code)) return 'cat-accented';
+      if (Categories.symbols.includes(code)) return 'cat-symbols';
+      return '';
+    }
+
+    let CopyMode = 'char';
+    let ViewMode = 'list';
+    let FilterMode = 'all';
+    let SearchTerm = '';
+    let ZoomLevel = 2;  // Start at Normal (level 2)
+    let CurrentCharset = 'cp437';
+    let SplitMode = 'all';
+
+    const ZoomLevels = ['Largest', 'Normal', 'Compact', 'Dense', 'Minimal'];
+
+    function GetChar(code) {
+      if (code < 32) return ControlAbbrev[code];
+      if (code === 127) return 'DEL';
+      if (code >= 128 && CurrentCharset === 'cp437') {
+        return CP437_Chars[code - 128];
+      }
+      if (CurrentCharset === 'iso8859' && code >= 128 && code < 160) {
+        return '�';  // Undefined in ISO-8859-1
+      }
+      return String.fromCharCode(code);
+    }
+
+    function GetCharName(code) {
+      if (code < 128) return BaseCharNames[code];
+      const charset = CharSets[CurrentCharset];
+      if (charset.names) {
+        return charset.names[code - 128] || 'Unknown';
+      }
+      return CharSets.win1252.names[code - 128] || 'Unknown';
+    }
+
+    function GetCharClass(code) {
+      if (code < 32 || code === 127) return 'control-char';
+      if (CurrentCharset !== 'cp437' && [129,141,143,144,157].includes(code)) return 'unprintable';
+      if (CurrentCharset === 'iso8859' && code >= 128 && code < 160) return 'unprintable';
+      return '';
+    }
+
+    function GetEscapeSeq(code) {
+      if (code === 0) return '\\0';
+      if (code === 7) return '\\a';
+      if (code === 8) return '\\b';
+      if (code === 9) return '\\t';
+      if (code === 10) return '\\n';
+      if (code === 11) return '\\v';
+      if (code === 12) return '\\f';
+      if (code === 13) return '\\r';
+      if (code === 27) return '\\e';
+      if (code === 34) return '\\"';
+      if (code === 39) return "\\'";
+      if (code === 92) return '\\\\';
+      if (code < 32 || code === 127) return `\\x${code.toString(16).padStart(2,'0')}`;
+      if (code >= 128) return `\\x${code.toString(16).padStart(2,'0')}`;
+      return String.fromCharCode(code);
+    }
+
+    function GetCopyValue(code) {
+      const char = GetChar(code);
+      switch(CopyMode) {
+        case 'char':
+          return (code < 32 || code === 127 || char === '�') ? '' : char;
+        case 'hex':
+          return '0x' + code.toString(16).padStart(2,'0').toUpperCase();
+        case 'dec':
+          return code.toString();
+        case 'single':
+          return (code < 32 || code === 127 || char === '�') ? '' : `'${char}'`;
+        case 'double':
+          return (code < 32 || code === 127 || char === '�') ? '' : `"${char}"`;
+        case 'escape':
+          return GetEscapeSeq(code);
+        case 'alt':
+          return 'Alt+' + code.toString().padStart(4,'0');
+        default:
+          return char;
+      }
+    }
+
+    function ShowToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function CopyToClipboard(text) {
+      if (!text) {
+        ShowToast('Nothing to copy');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        ShowToast(`Copied: ${text}`);
+      });
+    }
+
+    function ShouldIncludeChar(code) {
+      if (FilterMode === 'all') return true;
+      // Handle hierarchical filters
+      if (FilterMode === 'drawing') {
+        return Categories['drawing'].includes(code);
+      }
+      if (FilterMode === 'writing') {
+        return Categories['writing'].includes(code);
+      }
+      return Categories[FilterMode]?.includes(code) || false;
+    }
+
+    function MatchesSearch(code) {
+      if (!SearchTerm) return true;
+      const name = GetCharName(code);
+      const searchLower = SearchTerm.toLowerCase();
+      return name.toLowerCase().includes(searchLower) ||
+             GetChar(code).toLowerCase().includes(searchLower) ||
+             code.toString().includes(SearchTerm) ||
+             code.toString(16).toLowerCase().includes(searchLower);
+    }
+
+    function BuildListView() {
+      const tbodyLeft = document.getElementById('tableBodyLeft');
+      const tbodyRight = document.getElementById('tableBodyRight');
+      tbodyLeft.innerHTML = '';
+      tbodyRight.innerHTML = '';
+
+      function buildColumn(tbody, start, end, sections) {
+        for (const section of sections) {
+          if (section.start < start || section.end > end) continue;
+          
+          let sectionHasContent = false;
+          let sectionRows = [];
+
+          for (let i = section.start; i <= section.end; i++) {
+            if (i < start || i > end) continue;
+            if (!ShouldIncludeChar(i) || !MatchesSearch(i)) continue;
+
+            sectionHasContent = true;
+            const name = GetCharName(i);
+            const row = document.createElement('tr');
+            row.dataset.code = i;
+            row.className = GetCategoryClass(i);
+            
+            row.innerHTML = `
+              <td class="dec-cell">${i}</td>
+              <td class="hex-cell">0x${i.toString(16).padStart(2,'0').toUpperCase()}</td>
+              <td class="char-cell ${GetCharClass(i)}">${GetChar(i)}</td>
+              <td class="alt-cell">Alt+${i.toString().padStart(4,'0')}</td>
+              <td class="name-cell">${name}</td>
+            `;
+            
+            row.addEventListener('click', () => {
+              const value = GetCopyValue(i);
+              CopyToClipboard(value);
+            });
+            
+            sectionRows.push(row);
+          }
+
+          if (sectionHasContent && FilterMode === 'all') {
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'section-header';
+            headerRow.innerHTML = `<td colspan="5">${section.name}</td>`;
+            tbody.appendChild(headerRow);
+          }
+
+          sectionRows.forEach(row => tbody.appendChild(row));
+        }
+      }
+
+      const sections = [
+        { start: 0,   end: 31,  name: 'Control Characters' },
+        { start: 32,  end: 47,  name: 'Symbols & Punctuation' },
+        { start: 48,  end: 57,  name: 'Digits' },
+        { start: 58,  end: 64,  name: 'Punctuation' },
+        { start: 65,  end: 90,  name: 'Uppercase Letters' },
+        { start: 91,  end: 96,  name: 'Punctuation' },
+        { start: 97,  end: 122, name: 'Lowercase Letters' },
+        { start: 123, end: 127, name: 'Punctuation & Control' },
+        { start: 128, end: 159, name: 'Extended Control' },
+        { start: 160, end: 191, name: 'Extended Symbols' },
+        { start: 192, end: 255, name: 'Extended Letters' }
+      ];
+
+      buildColumn(tbodyLeft, 0, 127, sections);
+      buildColumn(tbodyRight, 128, 255, sections);
+    }
+
+    function BuildTableView() {
+      const grid = document.getElementById('compactGrid');
+      grid.innerHTML = '';
+      grid.className = `compact-grid zoom-${ZoomLevel}`;
+
+      // Determine range based on split mode
+      let startRange = 0;
+      let endRange = 255;
+      if (SplitMode === 'normal') {
+        startRange = 0;
+        endRange = 127;
+      } else if (SplitMode === 'extended') {
+        startRange = 128;
+        endRange = 255;
+      }
+
+      // Build array of chars to display
+      let charsToShow = [];
+      for (let i = startRange; i <= endRange; i++) {
+        if (ShouldIncludeChar(i) && MatchesSearch(i)) {
+          charsToShow.push(i);
+        }
+      }
+
+      // If showing all chars and no search, organize in proper 16-column grid
+      if (FilterMode === 'all' && !SearchTerm) {
+        for (let i = startRange; i <= endRange; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'compact-cell';
+          cell.dataset.code = i;
+
+          const charDisplay = GetChar(i);
+          const charClass = GetCharClass(i);
+
+          const catClass = GetCategoryClass(i);
+          cell.className = `compact-cell ${catClass}`;
+          
+          cell.innerHTML = `
+            <div class="compact-cell-left">
+              <div class="compact-info compact-dec">${i}</div>
+              <div class="compact-info compact-hex">0x${i.toString(16).padStart(2,'0').toUpperCase()}</div>
+            </div>
+            <div class="compact-cell-right">
+              <div class="compact-char ${charClass}">${charDisplay}</div>
+            </div>
+          `;
+
+          cell.addEventListener('click', () => {
+            const value = GetCopyValue(i);
+            CopyToClipboard(value);
+          });
+
+          grid.appendChild(cell);
+        }
+      } else {
+        // For filtered view, just show matching chars
+        charsToShow.forEach(i => {
+          const cell = document.createElement('div');
+          cell.className = 'compact-cell';
+          cell.dataset.code = i;
+
+          const charDisplay = GetChar(i);
+          const charClass = GetCharClass(i);
+
+          const catClass = GetCategoryClass(i);
+          cell.className = `compact-cell ${catClass}`;
+          
+          cell.innerHTML = `
+            <div class="compact-cell-left">
+              <div class="compact-info compact-dec">${i}</div>
+              <div class="compact-info compact-hex">0x${i.toString(16).padStart(2,'0').toUpperCase()}</div>
+            </div>
+            <div class="compact-cell-right">
+              <div class="compact-char ${charClass}">${charDisplay}</div>
+            </div>
+          `;
+
+          cell.addEventListener('click', () => {
+            const value = GetCopyValue(i);
+            CopyToClipboard(value);
+          });
+
+          grid.appendChild(cell);
+        });
+      }
+    }
+
+    function UpdateView() {
+      if (ViewMode === 'list') {
+        BuildListView();
+      } else {
+        BuildTableView();
+      }
+    }
+
+    function UpdateZoomButtons() {
+      document.getElementById('zoomOut').disabled = ZoomLevel >= 5;
+      document.getElementById('zoomIn').disabled = ZoomLevel <= 1;
+      document.getElementById('zoomLevel').textContent = ZoomLevels[ZoomLevel - 1];
+    }
+
+    // Charset selector
+    document.querySelectorAll('.charset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.charset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        CurrentCharset = btn.dataset.charset;
+        UpdateCategories();
+        UpdateView();
+      });
+    });
+
+    // View mode selector
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ViewMode = btn.dataset.view;
+        
+        if (ViewMode === 'list') {
+          document.getElementById('listView').classList.remove('hidden');
+          document.getElementById('tableView').classList.add('hidden');
+          document.getElementById('zoomControls').style.display = 'none';
+          document.getElementById('splitControls').style.display = 'none';
+        } else {
+          document.getElementById('listView').classList.add('hidden');
+          document.getElementById('tableView').classList.remove('hidden');
+          document.getElementById('zoomControls').style.display = 'flex';
+          document.getElementById('splitControls').style.display = 'flex';
+        }
+        
+        UpdateView();
+      });
+    });
+
+    // Zoom controls (fixed: zoomIn makes bigger, zoomOut makes smaller)
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      if (ZoomLevel > 1) {
+        ZoomLevel--;
+        UpdateZoomButtons();
+        BuildTableView();
+      }
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      if (ZoomLevel < 5) {
+        ZoomLevel++;
+        UpdateZoomButtons();
+        BuildTableView();
+      }
+    });
+
+    // Split mode selector
+    document.querySelectorAll('.split-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.split-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        SplitMode = btn.dataset.split;
+        UpdateView();
+      });
+    });
+
+    // Copy mode selector
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        CopyMode = btn.dataset.mode;
+      });
+    });
+
+    // Filter selector
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        FilterMode = btn.dataset.filter;
+        UpdateView();
+      });
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      SearchTerm = e.target.value;
+      UpdateView();
+    });
+
+    // Initialize
+    UpdateCategories();
+    UpdateZoomButtons();
+    UpdateView();
+  </script>
+</body>
+</html>
