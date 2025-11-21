@@ -33,6 +33,7 @@
   --number: #95e77e;
   --letter: #ffd93d;
   --semicolon: #a8e6cf;
+  --nav-height: 60px;
 }
 
 * {
@@ -53,6 +54,7 @@ body {
   max-width: 1600px;
   margin: 0 auto;
   padding: var(--gap);
+  position: relative;
 }
 
 .header {
@@ -88,14 +90,21 @@ body {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 4px;
-  position: sticky;
-  top: 2px;
-  z-index: 100;
+  padding: 4px var(--gap);
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
-  margin-bottom: 4px;
+  margin: 0 auto 4px;
+  max-width: 1600px;
+}
+
+.nav-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .nav a {
@@ -117,12 +126,99 @@ body {
   background: var(--bg);
 }
 
+.nav-search {
+  margin-left: auto;
+  padding: 4px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 11px;
+  outline: none;
+  transition: all 0.1s;
+  min-width: 200px;
+}
+
+.nav-search:focus {
+  border-color: var(--accent);
+  background: var(--bg);
+  color: var(--text-bright);
+}
+
+.nav-search::placeholder {
+  color: var(--text-dim);
+}
+
+.section.hidden {
+  display: none;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 2px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  min-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+.search-dropdown.show {
+  display: block;
+}
+
+.search-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-dropdown-item:hover,
+.search-dropdown-item.selected {
+  background: var(--bg-hover);
+  border-left: 2px solid var(--accent);
+}
+
+.search-dropdown-item-name {
+  color: var(--text-bright);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.search-dropdown-item-seq {
+  color: var(--accent);
+  font-family: monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.search-dropdown-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.nav {
+  position: relative;
+}
+
 .section {
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   margin-bottom: var(--gap);
-  overflow: hidden;
 }
 
 .section-header {
@@ -138,6 +234,9 @@ body {
   justify-content: space-between;
   user-select: none;
   transition: background 0.1s;
+  position: sticky;
+  top: var(--nav-height, 50px);
+  z-index: 100;
 }
 
 .section-header:hover {
@@ -159,12 +258,12 @@ body {
 
 .section-content {
   max-height: 5000px;
-  overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
 
 .section.collapsed .section-content {
   max-height: 0;
+  overflow: hidden;
 }
 
 .seq-entry {
@@ -203,6 +302,96 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.seq-right {
+  background: var(--bg-panel);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color256-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 4px;
+  align-items: start;
+}
+
+.color256-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seq-entry-compact {
+  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.seq-entry-compact .seq-left {
+  padding: 8px 12px;
+  min-width: 0;
+  word-wrap: break-word;
+}
+
+.seq-entry-compact .seq-desc {
+  padding: 8px 12px;
+  font-size: 10px;
+  min-width: 0;
+  word-wrap: break-word;
+}
+
+.seq-entry-compact .seq-code {
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.seq-entry-compact .seq-name {
+  font-size: 14px;
+}
+
+.seq-entry-compact .seq-bytes {
+  flex-wrap: wrap;
+  word-break: break-all;
+}
+
+.color256-right {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.color256-tooltip {
+  position: absolute;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  font-size: 10px;
+  font-family: monospace;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.color256-tooltip .tooltip-type {
+  color: var(--accent);
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.color256-tooltip .tooltip-seq {
+  color: var(--green);
 }
 
 .seq-name {
@@ -381,6 +570,53 @@ body {
   transform: scale(1.3);
   z-index: 10;
   border: 1px solid white;
+}
+
+.color-256-grid {
+  grid-template-columns: repeat(16, 1fr);
+}
+
+.color-256-split-cell {
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: bold;
+  transition: transform 0.1s;
+  overflow: hidden;
+}
+
+.color-256-split-cell:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  border: 1px solid white;
+}
+
+.color-256-split-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.color-256-split-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.color-256-split-cell .cell-index {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .rgb-controls {
@@ -872,25 +1108,31 @@ input[type="range"]::-moz-range-thumb:hover {
     </div>
   </div>
 
-  <nav class="nav">
-    <a href="#escape">C-escape</a>
-    <a href="#cursor">cursor</a>
-    <a href="#erase">erase</a>
-    <a href="#format">format</a>
-    <a href="#colors">colors</a>
-    <a href="#256">256-bit</a>
-    <a href="#rgb">rgb</a>
-    <a href="#scroll">scroll</a>
-    <a href="#screen">screen</a>
-    <a href="#modes">modes</a>
-    <a href="#input">input</a>
-    <a href="#query">query</a>
-    <a href="#osc">osc</a>
-    <a href="#advanced">advanced</a>
-    <a href="#winapi">winapi</a>
-    <a href="#practical">practical</a>
-    <a href="#internals">internals</a>
-  </nav>
+  <div class="nav-wrapper">
+    <nav class="nav">
+      <a href="#escape">C-escape</a>
+      <a href="#cursor">cursor</a>
+      <a href="#erase">erase</a>
+      <a href="#format">format</a>
+      <a href="#colors">colors</a>
+      <a href="#256">256-bit</a>
+      <a href="#rgb">rgb</a>
+      <a href="#scroll">scroll</a>
+      <a href="#screen">screen</a>
+      <a href="#modes">modes</a>
+      <a href="#input">input</a>
+      <a href="#query">query</a>
+      <a href="#osc">osc</a>
+      <a href="#advanced">advanced</a>
+      <a href="#winapi">winapi</a>
+      <a href="#practical">practical</a>
+      <a href="#internals">internals</a>
+      <div style="position: relative;">
+        <input type="text" id="searchInput" class="nav-search" placeholder="Search sequences..." autofocus>
+        <div id="searchDropdown" class="search-dropdown"></div>
+      </div>
+    </nav>
+  </div>
 
   <!-- Copied Toast -->
   <div class="copied-toast" id="copiedToast">Sequence Copied!</div>
@@ -1884,76 +2126,87 @@ input[type="range"]::-moz-range-thumb:hover {
       <span style="font-size: 10px; color: var(--text-dim)">Extended palette</span>
     </div>
     <div class="section-content">
-      <div class="seq-entry" data-sequence="\x1b[38;5;196m">
-        <div class="seq-left">
-          <div class="seq-name">256-Color Foreground</div>
-          <div class="seq-code">
-            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">38</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
+      <div class="color256-container">
+        <div class="color256-left">
+          <div class="seq-entry seq-entry-compact" data-sequence="\x1b[38;5;196m">
+            <div class="seq-left">
+              <div class="seq-name">256-Color Foreground</div>
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">38</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
+              </div>
+              <div class="seq-bytes">
+                <span class="byte-hex esc">1B</span>
+                <span class="byte-hex bracket">5B</span>
+                <span class="byte-hex number">33 38</span>
+                <span class="byte-hex semicolon">3B</span>
+                <span class="byte-hex number">35</span>
+                <span class="byte-hex semicolon">3B</span>
+                <span class="byte-placeholder">##</span>
+                <span class="byte-hex letter">6D</span>
+              </div>
+              <div class="seq-length">[8+ bytes]</div>
+            </div>
+            <div class="seq-desc">
+              Set foreground using 256-color palette index (0-255). Palette: 0-15 standard, 16-231 color cube, 232-255 grayscale.
+              <div class="seq-params">
+                <div class="param-item"><span class="param-value">38</span> foreground color select</div>
+                <div class="param-item"><span class="param-value">5</span> 256-color mode indicator</div>
+                <div class="param-item"><span class="param-value">n</span> color index (0-255)</div>
+              </div>
+              <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+            </div>
           </div>
-          <div class="seq-bytes">
-            <span class="byte-hex esc">1B</span>
-            <span class="byte-hex bracket">5B</span>
-            <span class="byte-hex number">33 38</span>
-            <span class="byte-hex semicolon">3B</span>
-            <span class="byte-hex number">35</span>
-            <span class="byte-hex semicolon">3B</span>
-            <span class="byte-placeholder">##</span>
-            <span class="byte-hex letter">6D</span>
+
+          <div class="seq-entry seq-entry-compact" data-sequence="\x1b[48;5;196m">
+            <div class="seq-left">
+              <div class="seq-name">256-Color Background</div>
+              <div class="seq-code">
+                <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">48</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
+              </div>
+              <div class="seq-bytes">
+                <span class="byte-hex esc">1B</span>
+                <span class="byte-hex bracket">5B</span>
+                <span class="byte-hex number">34 38</span>
+                <span class="byte-hex semicolon">3B</span>
+                <span class="byte-hex number">35</span>
+                <span class="byte-hex semicolon">3B</span>
+                <span class="byte-placeholder">##</span>
+                <span class="byte-hex letter">6D</span>
+              </div>
+              <div class="seq-length">[8+ bytes]</div>
+            </div>
+            <div class="seq-desc">
+              Set background using 256-color palette. Same format as foreground but uses 48 instead of 38.
+              <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
+            </div>
           </div>
-          <div class="seq-length">[8+ bytes]</div>
+
+          <div class="seq-terminal" id="term256Combined">
+            <div class="term-line term-output">No color: Sample text</div>
+            <div class="term-line term-output">BG only: Sample text</div>
+            <div class="term-line term-output">FG only: Sample text</div>
+            <div class="term-line term-output">Both: Sample text</div>
+            <div class="term-line term-output"><span class="cursor-block"></span></div>
+          </div>
         </div>
-        <div class="seq-desc">
-          Set foreground using 256-color palette index (0-255). Palette: 0-15 standard, 16-231 6×6×6 cube, 232-255 grayscale.
-          <div class="seq-params">
-            <div class="param-item"><span class="param-value">38</span> foreground color select</div>
-            <div class="param-item"><span class="param-value">5</span> 256-color mode indicator</div>
-            <div class="param-item"><span class="param-value">n</span> color index (0-255)</div>
+
+        <div class="color256-right">
+          <div style="padding:8px 12px;margin-bottom:8px">
+            <div style="color:var(--text-dim);font-size:10px;margin-bottom:8px;font-weight:600">256-COLOR PALETTE (0-255)</div>
+            <div style="color:var(--text-dim);font-size:9px;margin-bottom:8px;font-style:italic">
+              Click left half for background, right half for foreground. Hover to see sequence.
+            </div>
+            <div class="color-grid color-256-grid" id="color256Grid" style="grid-template-columns: repeat(16, 1fr);"></div>
           </div>
-          <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
-        </div>
-        <div class="seq-terminal" id="term256Fg">
-          <div class="term-line term-input">printf "\x1b[38;5;196mCOLOR 196"</div>
-          <div class="term-line term-output"><span style="color:#ff0000">COLOR 196</span><span class="cursor-block"></span></div>
         </div>
       </div>
 
       <div style="padding:8px 12px">
         <div style="color:var(--text-dim);font-size:10px;margin-bottom:8px;font-weight:600">STANDARD COLORS (0-15)</div>
-        <div class="color-palette color-16" id="std256"></div>
-        
-        <div style="color:var(--text-dim);font-size:10px;margin:12px 0 8px;font-weight:600">6×6×6 COLOR CUBE (16-231)</div>
-        <div class="color-256-cube" id="cube256"></div>
+        <div class="color-grid color-16" id="std256"></div>
         
         <div style="color:var(--text-dim);font-size:10px;margin:12px 0 8px;font-weight:600">GRAYSCALE (232-255)</div>
-        <div class="color-palette color-24" id="gray256"></div>
-      </div>
-
-      <div class="seq-entry" data-sequence="\x1b[48;5;196m">
-        <div class="seq-left">
-          <div class="seq-name">256-Color Background</div>
-          <div class="seq-code">
-            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">48</span><span class="token-semicolon">;</span><span class="token-number">5</span><span class="token-semicolon">;</span><span class="token-number">n</span><span class="token-letter">m</span>
-          </div>
-          <div class="seq-bytes">
-            <span class="byte-hex esc">1B</span>
-            <span class="byte-hex bracket">5B</span>
-            <span class="byte-hex number">34 38</span>
-            <span class="byte-hex semicolon">3B</span>
-            <span class="byte-hex number">35</span>
-            <span class="byte-hex semicolon">3B</span>
-            <span class="byte-placeholder">##</span>
-            <span class="byte-hex letter">6D</span>
-          </div>
-          <div class="seq-length">[8+ bytes]</div>
-        </div>
-        <div class="seq-desc">
-          Set background using 256-color palette. Same format as foreground but uses 48 instead of 38.
-          <div class="seq-warning">Requires: ENABLE_VIRTUAL_TERMINAL_PROCESSING</div>
-        </div>
-        <div class="seq-terminal" id="term256Bg">
-          <div class="term-line term-input">printf "\x1b[48;5;196mRED BG"</div>
-          <div class="term-line term-output"><span style="background:#ff0000;color:#fff">RED BG</span><span class="cursor-block"></span></div>
-        </div>
+        <div class="color-grid color-24" id="gray256"></div>
       </div>
 
       <div class="winapi-note">
@@ -2577,7 +2830,7 @@ input[type="range"]::-moz-range-thumb:hover {
           <div class="seq-compact-desc">Up arrow key</div>
         </div>
         <div class="seq-compact-row-separator"></div>
-        <div class="seq-compact-entry">
+        <div class="seq-compact-entry" data-sequence="\x1b[B">
           <div class="seq-compact-name">Arrow Down</div>
           <div class="seq-compact-code-group">
             <div class="seq-compact-code">
@@ -3075,7 +3328,91 @@ fflush(stdout);
       <span style="font-size: 10px; color: var(--text-dim)">Common use cases</span>
     </div>
     <div class="section-content">
-      <!-- Add practical examples here -->
+      <div class="seq-entry" data-sequence="\x1b[2J\x1b[H">
+        <div class="seq-left">
+          <div class="seq-name">Clear Screen and Reset Cursor</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">2J</span><span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">H</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">32 4A</span>
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex letter">48</span>
+          </div>
+          <div class="seq-length">[7 bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Clear entire screen and move cursor to home position (1,1). Common pattern for starting a fresh display.
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[1;31mERROR\x1b[0m">
+        <div class="seq-left">
+          <div class="seq-name">Colored Error Message</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">1;31</span><span class="token-letter">m</span>ERROR<span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">0</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">31 3B 33 31</span> <span class="byte-hex letter">6D</span>
+            ... <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">30</span> <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[13+ bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Display text in bold red, then reset formatting. Always reset after colored text to avoid affecting subsequent output.
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[?25l">
+        <div class="seq-left">
+          <div class="seq-name">Hide Cursor for Clean Output</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">?25l</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">3F 32 35</span> <span class="byte-hex letter">6C</span>
+          </div>
+          <div class="seq-length">[6 bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Hide cursor before generating output, then restore with <code>\x1b[?25h</code> when done. Useful for progress bars and animations.
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[38;5;196;48;5;232m">
+        <div class="seq-left">
+          <div class="seq-name">256-Color Foreground and Background</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">38;5;196;48;5;232</span><span class="token-letter">m</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">33 38 3B 35 3B 31 39 36 3B 34 38 3B 35 3B 32 33 32</span> <span class="byte-hex letter">6D</span>
+          </div>
+          <div class="seq-length">[18+ bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Set both foreground (red, index 196) and background (dark gray, index 232) in a single sequence. Multiple SGR parameters can be combined with semicolons.
+        </div>
+      </div>
+
+      <div class="seq-entry" data-sequence="\x1b[s\x1b[10;20H\x1b[u">
+        <div class="seq-left">
+          <div class="seq-name">Save, Move, Restore Cursor</div>
+          <div class="seq-code">
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">s</span>
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-number">10;20</span><span class="token-letter">H</span>
+            <span class="token-esc">ESC</span><span class="token-bracket">[</span><span class="token-letter">u</span>
+          </div>
+          <div class="seq-bytes">
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex letter">73</span>
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex number">31 30 3B 32 30</span> <span class="byte-hex letter">48</span>
+            <span class="byte-hex esc">1B</span> <span class="byte-hex bracket">5B</span> <span class="byte-hex letter">75</span>
+          </div>
+          <div class="seq-length">[15+ bytes]</div>
+        </div>
+        <div class="seq-desc">
+          Save cursor position, move to row 10 column 20, write content, then restore original position. Useful for overlays and status displays.
+        </div>
+      </div>
     </div>
   </section>
 
@@ -3086,7 +3423,65 @@ fflush(stdout);
       <span style="font-size: 10px; color: var(--text-dim)">Under the hood</span>
     </div>
     <div class="section-content" style="padding: 16px;">
-      <!-- Add internals content here -->
+      <div style="margin-bottom: 16px;">
+        <h3 style="color: var(--accent); margin-bottom: 8px; font-size: 14px;">Virtual Terminal Processing</h3>
+        <p style="color: var(--text); line-height: 1.6; margin-bottom: 12px;">
+          Windows 10 (build 1511+) supports ANSI escape sequences through <code>ENABLE_VIRTUAL_TERMINAL_PROCESSING</code> mode. 
+          This mode enables the console to interpret VT100-style escape sequences natively, without translation layers.
+        </p>
+        <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-family: monospace; font-size: 11px; margin-top: 8px;">
+          <div style="color: var(--text-dim); margin-bottom: 4px;">C++ Example:</div>
+          <div style="color: var(--accent);">HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);</div>
+          <div style="color: var(--accent);">DWORD dwMode = 0;</div>
+          <div style="color: var(--accent);">GetConsoleMode(hOut, &dwMode);</div>
+          <div style="color: var(--accent);">dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;</div>
+          <div style="color: var(--accent);">SetConsoleMode(hOut, dwMode);</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="color: var(--accent); margin-bottom: 8px; font-size: 14px;">Color Translation</h3>
+        <p style="color: var(--text); line-height: 1.6; margin-bottom: 12px;">
+          Without VT processing, Windows Console uses 16-bit color attributes via <code>SetConsoleTextAttribute()</code>. 
+          The 16 colors map to ANSI standard colors (0-15). Extended 256-color and RGB modes require VT processing.
+        </p>
+        <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-family: monospace; font-size: 11px; margin-top: 8px;">
+          <div style="color: var(--text-dim); margin-bottom: 4px;">16-bit Color Flags:</div>
+          <div style="color: var(--accent);">FOREGROUND_RED | FOREGROUND_INTENSITY = Bright Red</div>
+          <div style="color: var(--accent);">BACKGROUND_BLUE | BACKGROUND_GREEN = Cyan Background</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="color: var(--accent); margin-bottom: 8px; font-size: 14px;">Buffer Management</h3>
+        <p style="color: var(--text); line-height: 1.6; margin-bottom: 12px;">
+          The console maintains separate screen and input buffers. Screen buffer operations (clearing, scrolling) 
+          affect the visible display. Cursor position is tracked independently and can be saved/restored.
+        </p>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="color: var(--accent); margin-bottom: 8px; font-size: 14px;">Sequence Parsing</h3>
+        <p style="color: var(--text); line-height: 1.6; margin-bottom: 12px;">
+          VT sequences are parsed character-by-character. The parser recognizes ESC (0x1B) as the start, 
+          followed by '[' for CSI sequences. Parameters are separated by semicolons and terminated by a command letter.
+        </p>
+        <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-family: monospace; font-size: 11px; margin-top: 8px;">
+          <div style="color: var(--text-dim); margin-bottom: 4px;">Parse Flow:</div>
+          <div style="color: var(--accent);">1. Detect ESC (0x1B)</div>
+          <div style="color: var(--accent);">2. Expect '[' (0x5B) for CSI</div>
+          <div style="color: var(--accent);">3. Read parameters (digits, semicolons)</div>
+          <div style="color: var(--accent);">4. Execute on command letter (m, H, J, etc.)</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h3 style="color: var(--accent); margin-bottom: 8px; font-size: 14px;">Performance Considerations</h3>
+        <p style="color: var(--text); line-height: 1.6; margin-bottom: 12px;">
+          VT processing adds minimal overhead. For high-frequency updates, consider batching sequences or using 
+          <code>WriteConsoleOutput()</code> for direct buffer manipulation. Screen clearing operations can be expensive on large buffers.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -3127,7 +3522,7 @@ function copySequence(text, element, event) {
   if (event) event.stopPropagation();
   
   // Handle click on color cells within entries
-  if (element && (element.classList.contains('color-cell') || element.classList.contains('color-256-cell'))) {
+  if (element && (element.classList.contains('color-cell') || element.classList.contains('color-256-cell') || element.classList.contains('color-256-split-cell'))) {
     lastClickedColor = text;
     updateColorSections();
   }
@@ -3138,29 +3533,65 @@ function copySequence(text, element, event) {
   // Surround with quotes for C++ string literal
   const quotedText = `"${cppText}"`;
   
-  navigator.clipboard.writeText(quotedText).then(() => {
-    copyCount++;
-    const countEl = document.getElementById('copiedCount');
-    if (countEl) countEl.textContent = copyCount + ' copied';
-    
-    const toast = document.getElementById('copiedToast');
-    if (toast) {
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1500);
+  // Try clipboard API first, fallback to older methods
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(quotedText).then(() => {
+      showCopyFeedback(element);
+    }).catch(err => {
+      console.error('Clipboard API failed:', err);
+      // Fallback to execCommand
+      fallbackCopy(quotedText, element);
+    });
+  } else {
+    // Fallback for older browsers
+    fallbackCopy(quotedText, element);
+  }
+}
+
+function fallbackCopy(text, element) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      showCopyFeedback(element);
+    } else {
+      console.error('execCommand copy failed');
     }
-    
-    if (element && !element.classList.contains('color-cell')) {
-      const entry = element.closest('.seq-entry');
-      if (entry) {
-        entry.style.borderColor = 'var(--green)';
-        setTimeout(() => {
-          entry.style.borderColor = '';
-        }, 300);
-      }
+  } catch (err) {
+    console.error('Fallback copy failed:', err);
+  } finally {
+    document.body.removeChild(textArea);
+  }
+}
+
+function showCopyFeedback(element) {
+  copyCount++;
+  const countEl = document.getElementById('copiedCount');
+  if (countEl) countEl.textContent = copyCount + ' copied';
+  
+  const toast = document.getElementById('copiedToast');
+  if (toast) {
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1500);
+  }
+  
+  if (element) {
+    const entry = element.closest('.seq-entry') || element.closest('.seq-compact-entry');
+    if (entry && !element.classList.contains('color-cell') && !element.classList.contains('color-256-split-cell')) {
+      entry.style.borderColor = 'var(--green)';
+      setTimeout(() => {
+        entry.style.borderColor = '';
+      }, 300);
     }
-  }).catch(err => {
-    console.error('Failed to copy:', err);
-  });
+  }
 }
 
 // Toggle section collapse
@@ -3394,30 +3825,26 @@ function initializeSequenceLengths() {
 // Make all sequence entries clickable
 function makeEntriesClickable() {
   document.querySelectorAll('.seq-entry').forEach(entry => {
-    const seqData = entry.dataset.sequence;
-    if (seqData) {
-      entry.addEventListener('click', (e) => {
-        // Don't copy if clicking play button or terminal
-        if (e.target.closest('.play-btn') || e.target.closest('.seq-terminal')) {
-          return;
-        }
-        copySequence(seqData, entry, e);
-      });
-    }
+    const seqTemplate = getSequenceTemplate(entry) || entry.dataset.sequence;
+    if (!seqTemplate) return;
+    entry.addEventListener('click', (e) => {
+      if (e.target.closest('.play-btn') || e.target.closest('.seq-terminal')) {
+        return;
+      }
+      copySequence(seqTemplate, entry, e);
+    });
   });
   
   // Make compact entries clickable
   document.querySelectorAll('.seq-compact-entry').forEach(entry => {
-    const seqData = entry.dataset.sequence;
-    if (seqData) {
-      entry.addEventListener('click', (e) => {
-        // Don't copy if clicking terminal
-        if (e.target.closest('.seq-compact-terminal')) {
-          return;
-        }
-        copySequence(seqData, entry, e);
-      });
-    }
+    const seqTemplate = getSequenceTemplate(entry) || entry.dataset.sequence;
+    if (!seqTemplate) return;
+    entry.addEventListener('click', (e) => {
+      if (e.target.closest('.seq-compact-terminal')) {
+        return;
+      }
+      copySequence(seqTemplate, entry, e);
+    });
   });
 }
 
@@ -3428,12 +3855,564 @@ function colorHexBytes(seqBytes, seqCode) {
   return seqBytes;
 }
 
+// Get 256-color palette RGB value
+function get256ColorRGB(index) {
+  if (index < 16) {
+    // Standard 16 colors
+    const standard = [
+      [0, 0, 0], [128, 0, 0], [0, 128, 0], [128, 128, 0],
+      [0, 0, 128], [128, 0, 128], [0, 128, 128], [192, 192, 192],
+      [128, 128, 128], [255, 0, 0], [0, 255, 0], [255, 255, 0],
+      [0, 0, 255], [255, 0, 255], [0, 255, 255], [255, 255, 255]
+    ];
+    return standard[index];
+  } else if (index < 232) {
+    // 6x6x6 color cube (16-231)
+    const cubeIndex = index - 16;
+    const r = Math.floor(cubeIndex / 36);
+    const g = Math.floor((cubeIndex % 36) / 6);
+    const b = cubeIndex % 6;
+    return [
+      r === 0 ? 0 : 55 + r * 40,
+      g === 0 ? 0 : 55 + g * 40,
+      b === 0 ? 0 : 55 + b * 40
+    ];
+  } else {
+    // Grayscale (232-255)
+    const gray = 8 + (index - 232) * 10;
+    return [gray, gray, gray];
+  }
+}
+
+// Initialize 256-color palettes
+function init256Colors() {
+  // Create shared tooltip element
+  let tooltip = document.getElementById('color256Tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'color256Tooltip';
+    tooltip.className = 'color256-tooltip';
+    tooltip.style.display = 'none';
+    document.body.appendChild(tooltip);
+  }
+  
+  // 16x16 grid with split cells (0-255)
+  const color256Grid = document.getElementById('color256Grid');
+  if (color256Grid) {
+    color256Grid.innerHTML = '';
+    for (let i = 0; i < 256; i++) {
+      const rgb = get256ColorRGB(i);
+      const hex = '#' + rgb.map(v => v.toString(16).padStart(2, '0')).join('');
+      const cell = document.createElement('div');
+      cell.className = 'color-256-split-cell';
+      cell.style.background = hex;
+      
+      const leftHalf = document.createElement('div');
+      leftHalf.className = 'color-256-split-left';
+      leftHalf.style.background = hex;
+      
+      const rightHalf = document.createElement('div');
+      rightHalf.className = 'color-256-split-right';
+      rightHalf.style.background = hex;
+      
+      const indexLabel = document.createElement('div');
+      indexLabel.className = 'cell-index';
+      indexLabel.textContent = i;
+      indexLabel.style.color = (rgb[0] + rgb[1] + rgb[2]) / 3 > 128 ? '#000' : '#fff';
+      
+      cell.appendChild(leftHalf);
+      cell.appendChild(rightHalf);
+      cell.appendChild(indexLabel);
+      
+      // Left half: set BG and copy FG
+      const bgSeq = `\\x1b[48;5;${i}m`;
+      const fgSeq = `\\x1b[38;5;${i}m`;
+      
+      leftHalf.onmouseenter = (e) => {
+        tooltip.innerHTML = `<div class="tooltip-type">Background</div><div class="tooltip-seq">${bgSeq}</div>`;
+        tooltip.style.display = 'block';
+        updateTooltipPosition(tooltip, e);
+      };
+      
+      leftHalf.onmouseleave = () => {
+        tooltip.style.display = 'none';
+      };
+      
+      leftHalf.onmousemove = (e) => {
+        updateTooltipPosition(tooltip, e);
+      };
+      
+      leftHalf.onclick = (e) => {
+        e.stopPropagation();
+        last256BgColor = i;
+        copySequence(fgSeq, cell, e);
+        update256ColorTerminal(last256FgColor, i, false);
+      };
+      
+      // Right half: set FG and copy FG
+      rightHalf.onmouseenter = (e) => {
+        tooltip.innerHTML = `<div class="tooltip-type">Foreground</div><div class="tooltip-seq">${fgSeq}</div>`;
+        tooltip.style.display = 'block';
+        updateTooltipPosition(tooltip, e);
+      };
+      
+      rightHalf.onmouseleave = () => {
+        tooltip.style.display = 'none';
+      };
+      
+      rightHalf.onmousemove = (e) => {
+        updateTooltipPosition(tooltip, e);
+      };
+      
+      rightHalf.onclick = (e) => {
+        e.stopPropagation();
+        last256FgColor = i;
+        copySequence(fgSeq, cell, e);
+        update256ColorTerminal(i, last256BgColor, true);
+      };
+      
+      color256Grid.appendChild(cell);
+    }
+  }
+  
+  // Standard colors (0-15)
+  const std256 = document.getElementById('std256');
+  if (std256) {
+    std256.innerHTML = '';
+    for (let i = 0; i < 16; i++) {
+      const rgb = get256ColorRGB(i);
+      const hex = '#' + rgb.map(v => v.toString(16).padStart(2, '0')).join('');
+      const cell = document.createElement('div');
+      cell.className = 'color-cell';
+      cell.style.background = hex;
+      cell.style.color = (rgb[0] + rgb[1] + rgb[2]) / 3 > 128 ? '#000' : '#fff';
+      cell.textContent = i;
+      cell.onclick = (e) => {
+        e.stopPropagation();
+        const seq = `\\x1b[38;5;${i}m`;
+        copySequence(seq, cell, e);
+      };
+      std256.appendChild(cell);
+    }
+  }
+  
+  // Grayscale (232-255)
+  const gray256 = document.getElementById('gray256');
+  if (gray256) {
+    gray256.innerHTML = '';
+    for (let i = 232; i < 256; i++) {
+      const rgb = get256ColorRGB(i);
+      const hex = '#' + rgb.map(v => v.toString(16).padStart(2, '0')).join('');
+      const cell = document.createElement('div');
+      cell.className = 'color-cell';
+      cell.style.background = hex;
+      cell.style.color = (rgb[0] + rgb[1] + rgb[2]) / 3 > 128 ? '#000' : '#fff';
+      cell.textContent = i;
+      cell.onclick = (e) => {
+        e.stopPropagation();
+        const seq = `\\x1b[38;5;${i}m`;
+        copySequence(seq, cell, e);
+      };
+      gray256.appendChild(cell);
+    }
+  }
+  
+  // Initialize terminal
+  update256ColorTerminal(null, null);
+}
+
+// Track 256-color terminal state
+let last256FgColor = null;
+let last256BgColor = null;
+
+// Update tooltip position
+function updateTooltipPosition(tooltip, event) {
+  tooltip.style.display = 'block';
+  const rect = tooltip.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  let x = event.clientX + 10;
+  let y = event.clientY - rect.height - 10;
+  
+  // Adjust if tooltip would go off screen
+  if (x + rect.width > viewportWidth) {
+    x = event.clientX - rect.width - 10;
+  }
+  if (y < 0) {
+    y = event.clientY + 20;
+  }
+  
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+// Update 256-color terminal
+function update256ColorTerminal(fgIndex, bgIndex, isFg) {
+  if (isFg !== undefined) {
+    if (isFg) {
+      last256FgColor = fgIndex;
+    } else {
+      last256BgColor = bgIndex;
+    }
+  }
+  
+  const terminal = document.getElementById('term256Combined');
+  if (!terminal) return;
+  
+  const fgColor = last256FgColor !== null ? get256ColorRGB(last256FgColor) : null;
+  const bgColor = last256BgColor !== null ? get256ColorRGB(last256BgColor) : null;
+  
+  let html = '';
+  html += `<div class="term-line term-output">No color: Sample text</div>`;
+  
+  if (bgColor) {
+    const bgHex = '#' + bgColor.map(v => v.toString(16).padStart(2, '0')).join('');
+    html += `<div class="term-line term-output" style="background: ${bgHex};">BG only: Sample text</div>`;
+  } else {
+    html += `<div class="term-line term-output">BG only: Sample text</div>`;
+  }
+  
+  if (fgColor) {
+    const fgHex = '#' + fgColor.map(v => v.toString(16).padStart(2, '0')).join('');
+    html += `<div class="term-line term-output" style="color: ${fgHex};">FG only: Sample text</div>`;
+  } else {
+    html += `<div class="term-line term-output">FG only: Sample text</div>`;
+  }
+  
+  if (fgColor && bgColor) {
+    const fgHex = '#' + fgColor.map(v => v.toString(16).padStart(2, '0')).join('');
+    const bgHex = '#' + bgColor.map(v => v.toString(16).padStart(2, '0')).join('');
+    html += `<div class="term-line term-output" style="color: ${fgHex}; background: ${bgHex};">Both: Sample text</div>`;
+  } else {
+    html += `<div class="term-line term-output">Both: Sample text</div>`;
+  }
+  
+  html += `<div class="term-line term-output"><span class="cursor-block"></span></div>`;
+  
+  terminal.innerHTML = html;
+}
+
+// Fuzzy search function
+function fuzzyMatch(pattern, text) {
+  pattern = pattern.toLowerCase();
+  text = text.toLowerCase();
+  
+  if (pattern.length === 0) return true;
+  
+  let patternIdx = 0;
+  for (let i = 0; i < text.length && patternIdx < pattern.length; i++) {
+    if (text[i] === pattern[patternIdx]) {
+      patternIdx++;
+    }
+  }
+  return patternIdx === pattern.length;
+}
+
+// Check if element is already visible in viewport
+function isElementVisible(element) {
+  if (!element) return false;
+  
+  const rect = element.getBoundingClientRect();
+  const navHeightVar = getComputedStyle(document.documentElement).getPropertyValue('--nav-height');
+  const navHeight = parseFloat(navHeightVar) || 0;
+  const headerHeight = document.querySelector('.section-header')?.offsetHeight || 0;
+  const stickyOffset = navHeight + headerHeight;
+  
+  return (
+    rect.top >= stickyOffset &&
+    rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom > stickyOffset
+  );
+}
+
+// Update sticky offsets based on nav height
+function updateStickyPositions() {
+  const navWrapper = document.querySelector('.nav-wrapper');
+  const navHeight = navWrapper ? navWrapper.offsetHeight : 0;
+  document.documentElement.style.setProperty('--nav-height', `${navHeight}px`);
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.style.top = `${navHeight}px`;
+  });
+}
+
+// Build sequence template with parameter placeholders
+function getSequenceTemplate(entry) {
+  if (!entry) return '';
+  if (entry.dataset.sequenceTemplate) {
+    return entry.dataset.sequenceTemplate;
+  }
+  
+  const codeEl = entry.querySelector('.seq-code');
+  if (!codeEl) {
+    const raw = entry.dataset.sequence || '';
+    entry.dataset.sequenceTemplate = raw;
+    return raw;
+  }
+  
+  let template = '';
+  codeEl.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return;
+    }
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const cls = node.className || '';
+      const text = (node.textContent || '').trim();
+      if (!text) return;
+      
+      if (cls.includes('token-esc')) {
+        template += '\x1b';
+      } else if (cls.includes('token-bracket')) {
+        template += text;
+      } else if (cls.includes('token-semicolon')) {
+        template += ';';
+      } else if (cls.includes('token-colon')) {
+        template += ':';
+      } else if (cls.includes('token-number')) {
+        if (/^\d+$/.test(text)) {
+          template += text;
+        } else {
+          template += `<${text}>`;
+        }
+      } else if (cls.includes('token-letter') || cls.includes('token-other')) {
+        if (/BEL/i.test(text)) {
+          template += '\\x07';
+        } else if (/^\D*$/.test(text) && text.length > 1) {
+          template += `<${text}>`;
+        } else {
+          template += text;
+        }
+      } else {
+        template += text;
+      }
+    }
+  });
+  
+  if (!template) {
+    template = entry.dataset.sequence || '';
+  }
+  
+  entry.dataset.sequenceTemplate = template;
+  return template;
+}
+
+// Search sequences and filter sections
+function performSearch(query) {
+  const queryLower = query.toLowerCase().trim();
+  const dropdown = document.getElementById('searchDropdown');
+  let selectedIndex = -1;
+  
+  // Clear previous selection
+  if (window.searchSelectedIndex !== undefined) {
+    window.searchSelectedIndex = -1;
+  }
+  
+  if (queryLower === '') {
+    // Show all sections, hide dropdown
+    document.querySelectorAll('.section').forEach(section => {
+      section.classList.remove('hidden');
+    });
+    if (dropdown) {
+      dropdown.classList.remove('show');
+      dropdown.innerHTML = '';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  
+  // Find all sequence entries (index by entry name only)
+  const allEntries = document.querySelectorAll('.seq-entry, .seq-compact-entry, .c-escape-item');
+  const matches = [];
+  
+  allEntries.forEach(entry => {
+    let nameEl = entry.querySelector('.seq-name, .seq-compact-name, .seq-compact-entry .seq-compact-name');
+    let name = nameEl ? nameEl.textContent.trim() : '';
+    let seqData = entry.dataset.sequence || '';
+    
+    if (!name && entry.classList.contains('c-escape-item')) {
+      nameEl = entry.querySelector('.c-escape-code');
+      name = nameEl ? nameEl.textContent.trim() : '';
+    }
+    
+    if (entry.classList.contains('c-escape-item')) {
+      const onclickAttr = entry.getAttribute('onclick');
+      if (onclickAttr) {
+        const match = onclickAttr.match(/copySequence\(['"`]([^'"`]+)['"`]/);
+        if (match) {
+          seqData = match[1];
+        }
+      }
+    }
+    
+    const templateSequence = getSequenceTemplate(entry) || seqData;
+    const searchText = (name || '').toLowerCase();
+    
+    if (name && fuzzyMatch(queryLower, searchText)) {
+      const section = entry.closest('.section');
+      matches.push({
+        name: name,
+        template: templateSequence,
+        entry: entry,
+        section: section
+      });
+    }
+  });
+  
+  // Update dropdown
+  if (dropdown) {
+    if (matches.length > 0) {
+      dropdown.innerHTML = '';
+      matches.forEach((match, index) => {
+        const item = document.createElement('div');
+        item.className = 'search-dropdown-item';
+        item.dataset.index = index;
+        item.innerHTML = `
+          <div class="search-dropdown-item-name">${match.name}</div>
+          <div class="search-dropdown-item-seq">${match.template || 'N/A'}</div>
+        `;
+        item.onclick = () => {
+          if (match.template) {
+            copySequence(match.template, match.entry, null);
+          }
+          if (match.section && !isElementVisible(match.section)) {
+            match.section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          match.entry.style.borderColor = 'var(--green)';
+          setTimeout(() => {
+            match.entry.style.borderColor = '';
+          }, 1000);
+        };
+        dropdown.appendChild(item);
+      });
+      dropdown.classList.add('show');
+    } else {
+      dropdown.innerHTML = '<div class="search-dropdown-empty">No matches found</div>';
+      dropdown.classList.add('show');
+    }
+  }
+  
+  // Filter sections based on whether they contain matches
+  const sections = document.querySelectorAll('.section');
+  const matchedSections = new Set(matches.map(m => m.section));
+  let firstMatch = null;
+  
+  sections.forEach(section => {
+    if (matchedSections.has(section)) {
+      section.classList.remove('hidden');
+      if (!firstMatch) {
+        firstMatch = section;
+      }
+    } else {
+      section.classList.add('hidden');
+    }
+  });
+  
+  // Scroll to first match only if not already visible
+  if (firstMatch && queryLower !== '') {
+    if (!isElementVisible(firstMatch)) {
+      setTimeout(() => {
+        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }
+  
+  // Store matches for keyboard navigation
+  window.searchMatches = matches;
+  window.searchSelectedIndex = -1;
+}
+
+// Handle keyboard navigation in search
+function handleSearchKeydown(e) {
+  const dropdown = document.getElementById('searchDropdown');
+  if (!dropdown || !dropdown.classList.contains('show')) return;
+  
+  const items = dropdown.querySelectorAll('.search-dropdown-item');
+  if (items.length === 0) return;
+  
+  if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
+    e.preventDefault();
+    if (window.searchSelectedIndex === undefined) window.searchSelectedIndex = -1;
+    window.searchSelectedIndex = (window.searchSelectedIndex + 1) % items.length;
+    updateDropdownSelection(items);
+  } else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
+    e.preventDefault();
+    if (window.searchSelectedIndex === undefined) window.searchSelectedIndex = -1;
+    window.searchSelectedIndex = (window.searchSelectedIndex - 1 + items.length) % items.length;
+    updateDropdownSelection(items);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (window.searchSelectedIndex >= 0 && window.searchMatches && window.searchMatches[window.searchSelectedIndex]) {
+      const match = window.searchMatches[window.searchSelectedIndex];
+      if (match.template) {
+        copySequence(match.template, match.entry, null);
+      }
+      if (match.section && !isElementVisible(match.section)) {
+        match.section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      match.entry.style.borderColor = 'var(--green)';
+      setTimeout(() => {
+        match.entry.style.borderColor = '';
+      }, 1000);
+      // Clear search
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        performSearch('');
+      }
+    }
+  } else if (e.key === 'Escape') {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.value = '';
+      performSearch('');
+      searchInput.blur();
+    }
+  }
+}
+
+function updateDropdownSelection(items) {
+  items.forEach((item, index) => {
+    if (index === window.searchSelectedIndex) {
+      item.classList.add('selected');
+      item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else {
+      item.classList.remove('selected');
+    }
+  });
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('ANSI Reference loaded');
   initializeSequenceLengths();
   makeEntriesClickable();
   init256Colors();
+  
+  // Update sticky positions
+  updateStickyPositions();
+  // Update on resize
+  window.addEventListener('resize', updateStickyPositions);
+  
+  // Setup search
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      performSearch(e.target.value);
+    });
+    
+    searchInput.addEventListener('keydown', handleSearchKeydown);
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('searchDropdown');
+      if (dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+    
+    // Focus on search input
+    searchInput.focus();
+  }
   
   // Setup RGB controls if they exist
   const rgbFgR = document.getElementById('rgbFgR');
